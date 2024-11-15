@@ -1,4 +1,17 @@
+import { useState, useEffect } from "react";
+import { getPersons } from "../../../api/sql_api";
+
 const HRPanel = (props) => {
+  const [employees, setEmployees] = useState([])
+  const [roles, setRoles] = useState([])
+
+  useEffect(() => {
+    (async () => {
+      const res = await getPersons()
+      setEmployees(res)
+    })()
+  }, [])
+
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
       <div className="p-[1.3rem]">
@@ -55,8 +68,8 @@ const HRPanel = (props) => {
         </button>
       </div>
       <div className="h-[100%] w-full overflow-auto">
-        <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Profile Picture
@@ -65,36 +78,26 @@ const HRPanel = (props) => {
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Department
+                Position/s
               </th>
               <th scope="col" className="px-6 py-3">
-                Role/s
-              </th>
-              <th scope="col" className="px-6 py-3">
-                No. of Active Courses
+                Birthday
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150 dark:bg-gray-800 dark:border-gray-700">
-              <td className="pl-[1.2rem] underline hover:text-blue-700 cursor-pointer">
-                Technical Writing 1
-              </td>
-              <td className="p-[1.2rem]">July 23, 2001 : December 14, 2001</td>
-              <td></td>
-              <td className="p-[0.5rem]">
-                <p className="text-green-700 bg-green-100 w-fit p-[0.5rem] rounded-md border-[0.1rem] border-green-400">
-                  Completed
-                </p>
-              </td>
-              <td></td>
-            </tr>
-            <tr className="h-[2rem] bg-white border-b dark:bg-gray-800 dark:border-gray-700"></tr>
-            <tr className="h-[2rem] bg-white border-b dark:bg-gray-800 dark:border-gray-700"></tr>
-            <tr className="h-[2rem] bg-white border-b dark:bg-gray-800 dark:border-gray-700"></tr>
-            <tr className="h-[2rem] bg-white border-b dark:bg-gray-800 dark:border-gray-700"></tr>
-            <tr className="h-[2rem] bg-white border-b dark:bg-gray-800 dark:border-gray-700"></tr>
-            <tr></tr>
+            {employees.map((employee) => {
+              console.log(employee)
+              return (
+                <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
+                  <td className="px-6 py-3"></td>
+                  <td className="px-6 py-3">{employee.lastname, employee.firstname}</td>
+                  <td className="px-6 py-3">{employee.role_name}</td>
+                  <td className="px-6 py-3">{employee.birthday}</td>
+                </tr>
+              )
+            })}
+            <tr className="bg-white border-b"></tr>
           </tbody>
         </table>
       </div>

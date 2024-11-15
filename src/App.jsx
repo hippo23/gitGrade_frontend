@@ -2,8 +2,9 @@ import { createBrowserRouter, RouterProvider, Route, Link } from 'react-router-d
 import Homepage from './pages/Homepage/Homepage'
 import DashPanel from './pages/Homepage/components/DashPanel'
 import GradesPanel from './pages/Homepage/components/GradesPanel'
-import CoursesPanel from './pages/Homepage/components/CoursesPanel'
 import HRPanel from './pages/Homepage/components/HRPanel'
+import TeacherCoursesPanel from './pages/Homepage/components/CoursesPanel'
+import OrganizationCoursesPanel from './pages/Homepage/components/OrganizationCoursesPanel'
 
 const router = createBrowserRouter([
   {
@@ -21,12 +22,16 @@ const router = createBrowserRouter([
         element: <GradesPanel />
       },
       {
-        path: "/coursepanel",
-        element: <CoursesPanel />
+        path: "/teachercoursepanel",
+        element: <TeacherCoursesPanel />
       },
       {
         path: "/hrpanel",
         element: <HRPanel />
+      },
+      {
+        path: "/organizationcoursespanel",
+        element: <OrganizationCoursesPanel />
       }
     ]
   }

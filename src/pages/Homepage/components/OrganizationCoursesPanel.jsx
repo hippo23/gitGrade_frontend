@@ -1,21 +1,32 @@
-import { useState, useEffect } from "react";
-import { getTeacherSectionAssignment } from "../../../api/sql_api";
+import CourseForm from "./CourseForm";
+import React, { useEffect, useState } from "react";
+import { getAllCourses } from "../../../api/sql_api";
 
-const TeacherCoursesPanel = (props) => {
-  const [teacherCourses, setTeacherCourses] = useState([]);
-
+const OrganizationCoursesPanel = (props) => {
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [courses, setCourses] = useState([])
+  
   useEffect(() => {
     (async () => {
-      const res = await getTeacherSectionAssignment(3);
-      console.log(res);
-      setTeacherCourses(res);
-    })();
-  }, []);
+      const res = await getAllCourses()
+      console.log(res)
+      setCourses(res)
+    })()
+  }, [])
+
+  const showAddFormListener = () => {
+    setShowAddForm(true)
+  }
+
+  const hideAddFormListener = () => {
+    setShowAddForm(false)
+  }
 
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
+      { showAddForm ? <CourseForm hideAddFormListener={hideAddFormListener}  /> : '' }
       <div className="p-[1.3rem]">
-        <h1 className="font-bold text-[1.7rem]">Your Courses 📋</h1>
+        <h1 className="font-bold text-[1.7rem]">School Courses 📋</h1>
       </div>
       <div className="border-y-[1px] border-slate-150 px-[1rem] flex items-center">
         <button className="rounded-md hover:bg-gray-100 h-fit py-[0.4rem] px-[1rem] min-w-[5rem] text-[0.75rem] mr-[1rem]">
@@ -27,7 +38,7 @@ const TeacherCoursesPanel = (props) => {
         <button className="h-fit p-[1rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline">
           Second Semester
         </button>
-        <button className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md">
+        <button onClick={showAddFormListener} className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md">
           <span>
             <svg
               className="h-4 w-4"
@@ -35,7 +46,6 @@ const TeacherCoursesPanel = (props) => {
               width="16"
               height="16"
               fill="white"
-              class="bi bi-plus-square"
               viewBox="0 0 16 16"
             >
               <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
@@ -52,42 +62,28 @@ const TeacherCoursesPanel = (props) => {
                 Course Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Section Name
+                Class Code
               </th>
               <th scope="col" className="px-6 py-3">
-                Student Capacity / Maximum
+                Department
               </th>
               <th scope="col" className="px-6 py-3">
-                Status
+                Number of Units
               </th>
             </tr>
           </thead>
           <tbody>
-            {teacherCourses.map((course) => {
-              return (
-                <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
-                  <td className="pl-[1.2rem] underline hover:text-blue-700 cursor-pointer">
-                    {course.coursename}
-                  </td>
-                  <td className="p-[1.2rem]">
-                    {course.sectionname}
-                  </td>
-                  <td></td>
-                  <td className="p-[0.5rem]">
-                    {course.completionstatus ? 
-                      <p className="text-green-700 bg-green-100 w-fit p-[0.5rem] rounded-md border-[0.1rem] border-green-400">
-                        Completed
-                      </p>
-                      :
-                      <p className="text-orange-700 bg-orange-100 w-fit p-[0.5rem] rounded-md border-[0.1rem] border-orange-400">
-                        Ongoing
-                      </p>
-                    }
-                  </td>
-                </tr>
-              );
-            })}
-            <tr></tr>
+              {courses.map((course) => {
+                return (
+                  <tr className="h-[2rem]">
+                    <td className="px-6 py-3">{course.name}</td>
+                    <td></td>
+                    <td className="px-6 py-3">Criminology</td>
+                    <td className="px-6 py-3">{course.units}</td>
+                  </tr>
+                )
+              })}
+            <tr className="max-h-[2rem] bg-white border-b"></tr>
           </tbody>
         </table>
       </div>
@@ -95,4 +91,4 @@ const TeacherCoursesPanel = (props) => {
   );
 };
 
-export default TeacherCoursesPanel;
+export default OrganizationCoursesPanel;
