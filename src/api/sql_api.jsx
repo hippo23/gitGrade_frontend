@@ -7,7 +7,7 @@ const getAllCourses = async () => {
   return res.data;
 };
 
-const getPersons = async (role_name = '') => {
+const getPersons = async (role_name = "") => {
   const res = await axios.get(`${baseUrl}/database/persons/${role_name}`);
   return res.data;
 };
@@ -42,9 +42,51 @@ const getStudentCourseSection = async (
   semester
 ) => {
   const res = await axios.get(
-    `${baseUrl}/studentcoursesection/${course_name}/${course_section_name}/${semester}`
+    `${baseUrl}/database/studentcoursesection/${course_name}/${course_section_name}/${semester}`
   );
   return res.data;
 };
 
-export { getAllCourses, getPersons, getTeacherSectionAssignment, getStudentGrades, getCourseSections, getStudentCourseSection };
+const postAccountRequest = async ({
+  email,
+  firstname,
+  middlename,
+  lastname,
+  password,
+  role,
+  birthday,
+  address,
+}) => {
+  const data = {
+    email: email,
+    firstname: firstname,
+    middlename: middlename,
+    lastname: lastname,
+    password: password,
+    role: role,
+    birthday: birthday,
+    address: address,
+  };
+
+  console.log(data);
+
+  await axios.post(`${baseUrl}/database/pendingAccounts`, data);
+};
+
+const getPendingAccounts = async () => {
+  const res = await axios.get(
+    `${baseUrl}/database/pendingAccounts`
+  );
+  return res.data;
+}
+
+export {
+  getAllCourses,
+  getPersons,
+  getTeacherSectionAssignment,
+  getStudentGrades,
+  getCourseSections,
+  getStudentCourseSection,
+  postAccountRequest,
+  getPendingAccounts,
+};

@@ -1,13 +1,14 @@
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import React, { useRef, useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 
 const Homepage = (props) => {
-  const pageRef = useRef(null);
+  const { logout } = useAuth0();
 
   return (
     <div className="bg-gray-50 flex-1 h-full max-h-full w-full grid grid-cols-[310px_1fr]">
       <div className="bg-inherit h-full w-full flex flex-col py-[1rem] px-[2rem] border-r-[1px] border-slate-150">
-        <div className="bg-inherit h-fit text-black flex flex-col">
+        <div className="bg-inherit h-fit text-black flex flex-col mb-[2rem]">
           <p className="font-bold mb-[0.5rem]">Main</p>
           <div className="ml-[0.25rem] flex flex-col">
             <NavLink
@@ -170,6 +171,45 @@ const Homepage = (props) => {
             </NavLink>
           </div>
         </div>
+        <div>
+          <h1 className="font-bold">Admin</h1>
+          <div className="flex flex-col ml-[0.25rem]">
+            <NavLink
+              to="/accountrequests"
+              className={({ isActive, isPending }) =>
+                isActive
+                  ? "text-blue-400 border-l-[1px] border-blue-400"
+                  : "text-gray-800 border-l-[1px] border-gray-300"
+              }
+            >
+              <p
+                className={`h-[2.5rem] text-[0.8rem] flex items-center justify-start pl-[0.75rem] hover:bg-blue-50`}
+              >
+                <span>
+                  <svg
+                    className="mr-[1rem] w-4 h-4 text-gray-800 dark:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M11 9h6m-6 3h6m-6 3h6M6.996 9h.01m-.01 3h.01m-.01 3h.01M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"
+                    />
+                  </svg>
+                </span>
+                Account Requests
+              </p>
+            </NavLink>
+          </div>
+        </div>
+        <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className="mt-auto text-white text-opacity-[100%] font-bold px-[1rem] py-[0.5rem] rounded-md bg-gray-900">Sign out</button>
       </div>
       <div className="bg-white h-full max-h-full overflow-hidden">
           <Outlet />
@@ -178,4 +218,4 @@ const Homepage = (props) => {
   );
 };
 
-export default Homepage;
+export default withAuthenticationRequired(Homepage);

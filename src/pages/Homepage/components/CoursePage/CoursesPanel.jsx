@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getTeacherSectionAssignment } from "../../../api/sql_api";
+import { getTeacherSectionAssignment } from "../../../../api/sql_api";
 
 const TeacherCoursesPanel = (props) => {
   const [teacherCourses, setTeacherCourses] = useState([]);
@@ -46,7 +46,7 @@ const TeacherCoursesPanel = (props) => {
       </div>
       <div className="h-[100%] w-full overflow-auto">
         <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          <thead className="h-[2rem] relative z-1 text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Course Name

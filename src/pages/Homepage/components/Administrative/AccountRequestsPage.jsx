@@ -1,32 +1,21 @@
-import CourseForm from "./CourseForm";
-import React, { useEffect, useState } from "react";
-import { getAllCourses } from "../../../api/sql_api";
+import { useState, useEffect } from "react";
+import { getPendingAccounts } from "../../../../api/sql_api";
 
-const OrganizationCoursesPanel = (props) => {
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [courses, setCourses] = useState([])
-  
+const AccountRequestsPage = () => {
+  const [pendingAccounts, setPendingAccounts] = useState([]);
+
   useEffect(() => {
     (async () => {
-      const res = await getAllCourses()
-      console.log(res)
-      setCourses(res)
-    })()
-  }, [])
-
-  const showAddFormListener = () => {
-    setShowAddForm(true)
-  }
-
-  const hideAddFormListener = () => {
-    setShowAddForm(false)
-  }
+      const res = await getPendingAccounts();
+      console.log(res);
+      setPendingAccounts(res);
+    })();
+  }, []);
 
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
-      { showAddForm ? <CourseForm hideAddFormListener={hideAddFormListener}  /> : '' }
       <div className="p-[1.3rem]">
-        <h1 className="font-bold text-[1.7rem]">School Courses 📋</h1>
+        <h1 className="font-bold text-[1.7rem]">Account Requests 📋</h1>
       </div>
       <div className="border-y-[1px] border-slate-150 px-[1rem] flex items-center">
         <button className="rounded-md hover:bg-gray-100 h-fit py-[0.4rem] px-[1rem] min-w-[5rem] text-[0.75rem] mr-[1rem]">
@@ -38,7 +27,7 @@ const OrganizationCoursesPanel = (props) => {
         <button className="h-fit p-[1rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline">
           Second Semester
         </button>
-        <button onClick={showAddFormListener} className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md">
+        <button className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md">
           <span>
             <svg
               className="h-4 w-4"
@@ -54,36 +43,40 @@ const OrganizationCoursesPanel = (props) => {
           </span>
         </button>
       </div>
-      <div className="h-[100%] w-full overflow-auto">
+      <div className="h-[80%] w-[90%] overflow-auto place-self-center">
         <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          <thead className="h-[2rem] relative z-1 text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
-                Course Name
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Class Code
+                Email
               </th>
               <th scope="col" className="px-6 py-3">
-                Department
+                Address
               </th>
               <th scope="col" className="px-6 py-3">
-                Number of Units
+                Role
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Email Verification Status
               </th>
             </tr>
           </thead>
           <tbody>
-              {courses.map((course) => {
+            {pendingAccounts.map((account, index) => {
                 return (
-                  <tr className="h-[2rem]">
-                    <td className="px-6 py-3">{course.name}</td>
-                    <td></td>
-                    <td className="px-6 py-3">Criminology</td>
-                    <td className="px-6 py-3">{course.units}</td>
-                  </tr>
+                    <tr className="h-[1.5rem]" key={`${account}-${index}`}>
+                        <td className="px-6 py-3">{account.lastname}, {account.firstname} {account.middlename}</td>
+                        <td className="px-6 py-3">{account.email}</td>
+                        <td className="px-6 py-3">{account.location}</td>
+                        <td className="px-6 py-3">{account.role}</td>
+                        <td className="px-6 py-3"></td>
+                    </tr>
                 )
-              })}
-            <tr className="max-h-[2rem] bg-white border-b"></tr>
+            })}
+            <tr></tr>
           </tbody>
         </table>
       </div>
@@ -91,4 +84,4 @@ const OrganizationCoursesPanel = (props) => {
   );
 };
 
-export default OrganizationCoursesPanel;
+export default AccountRequestsPage;

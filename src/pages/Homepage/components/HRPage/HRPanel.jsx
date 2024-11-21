@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getPersons } from "../../../api/sql_api";
+import { getPersons } from "../../../../api/sql_api";
 
 const HRPanel = (props) => {
   const [employees, setEmployees] = useState([])
@@ -68,8 +68,8 @@ const HRPanel = (props) => {
         </button>
       </div>
       <div className="h-[100%] w-full overflow-auto">
-        <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <table className="h-[3rem] table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="relative text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Profile Picture
@@ -91,7 +91,7 @@ const HRPanel = (props) => {
               return (
                 <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
                   <td className="px-6 py-3"></td>
-                  <td className="px-6 py-3">{employee.lastname, employee.firstname}</td>
+                  <td className="px-6 py-3">{employee.middlename + ', ' + employee.firstname}</td>
                   <td className="px-6 py-3">{employee.role_name}</td>
                   <td className="px-6 py-3">{employee.birthday}</td>
                 </tr>
