@@ -1,30 +1,37 @@
 import CourseForm from "./CourseForm";
 import React, { useEffect, useState } from "react";
 import { getAllCourses } from "../../../../api/sql_api";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const OrganizationCoursesPanel = (props) => {
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [courses, setCourses] = useState([])
-  
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  const { getAccessTokenSilently, getIdTokenClaims } = useAuth0();
+
   useEffect(() => {
     (async () => {
-      const res = await getAllCourses()
-      console.log(res)
-      setCourses(res)
-    })()
-  }, [])
+      const accessToken = await getAccessTokenSilently();
+      const res = await getAllCourses(accessToken);
+      setCourses(res);
+    })();
+  }, [getAccessTokenSilently, getIdTokenClaims]);
 
   const showAddFormListener = () => {
-    setShowAddForm(true)
-  }
+    setShowAddForm(true);
+  };
 
   const hideAddFormListener = () => {
-    setShowAddForm(false)
-  }
+    setShowAddForm(false);
+  };
 
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
-      { showAddForm ? <CourseForm hideAddFormListener={hideAddFormListener}  /> : '' }
+      {showAddForm ? (
+        <CourseForm hideAddFormListener={hideAddFormListener} />
+      ) : (
+        ""
+      )}
       <div className="p-[1.3rem]">
         <h1 className="font-bold text-[1.7rem]">School Courses 📋</h1>
       </div>
@@ -38,7 +45,10 @@ const OrganizationCoursesPanel = (props) => {
         <button className="h-fit p-[1rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline">
           Second Semester
         </button>
-        <button onClick={showAddFormListener} className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md">
+        <button
+          onClick={showAddFormListener}
+          className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md"
+        >
           <span>
             <svg
               className="h-4 w-4"
@@ -56,8 +66,8 @@ const OrganizationCoursesPanel = (props) => {
       </div>
       <div className="h-[100%] w-full overflow-auto">
         <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="relative h-[2rem] text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
+          <thead className="">
+            <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
               <th scope="col" className="px-6 py-3">
                 Course Name
               </th>
@@ -73,17 +83,20 @@ const OrganizationCoursesPanel = (props) => {
             </tr>
           </thead>
           <tbody>
-              {courses.map((course) => {
-                return (
-                  <tr key={course.name} className="h-[2rem]">
-                    <td className="px-6 py-3">{course.name}</td>
-                    <td></td>
-                    <td className="px-6 py-3">Criminology</td>
-                    <td className="px-6 py-3">{course.units}</td>
-                  </tr>
-                )
-              })}
-            <tr className="max-h-[2rem] bg-white border-b"></tr>
+            {courses.map((course) => {
+              return (
+                <tr
+                  key={course.name}
+                  className="h-[1.5rem] bg-white border-y-[1px] border-slate-150"
+                >
+                  <td className="px-6 py-3">{course.name}</td>
+                  <td></td>
+                  <td className="px-6 py-3">Criminology</td>
+                  <td className="px-6 py-3">{course.units}</td>
+                </tr>
+              );
+            })}
+            <tr className="table-row-group bg-white border-b"></tr>
           </tbody>
         </table>
       </div>

@@ -18,6 +18,9 @@ import HRPanel from "./pages/Homepage/components/HRPage/HRPanel";
 import TeacherCoursesPanel from "./pages/Homepage/components/CoursePage/CoursesPanel";
 import OrganizationCoursesPanel from "./pages/Homepage/components/OrganizationCoursePage/OrganizationCoursesPanel";
 import AccountRequestsPage from "./pages/Homepage/components/Administrative/AccountRequestsPage";
+import InfosheetContainer from "./pages/Homepage/components/InfosheetPage/InfosheetContainer";
+import NotApprovedPage from "./pages/Homepage/components/DeniedPage/notApproved";
+import UserDetailsPage from "./pages/Homepage/components/Administrative/UserInfoPage";
 
 const Auth0ProviderLayout = () => {
   // customize redirect callback functoin for react router
@@ -25,12 +28,14 @@ const Auth0ProviderLayout = () => {
   const onRedirectCallback = (appState) => {
     navigate((appState && appState.returnTo) || window.location.pathname);
   };
+
   return (
     <Auth0Provider
       domain="dev-uslaj1b5ati50067.us.auth0.com"
       clientId="Q25nOCZ7H6gRYszHdkObv3qb2FjuMMNI"
       authorizationParams={{
         redirect_uri: window.location.origin,
+        audience: import.meta.env.VITE_REACT_APP_DATABASE_API_AUDIENCE,
       }}
       onRedirectCallback={onRedirectCallback}
     >
@@ -45,19 +50,21 @@ const routerElements = createBrowserRouter(
       <Route path="/" element={<Homepage />}>
         <Route path="dashpanel" element={<DashPanel />}></Route>
         <Route path="gradespanel" element={<GradesPanel />}></Route>
-        <Route
-          path="teachercoursepanel"
-          element={<TeacherCoursesPanel />}
-        ></Route>
+        <Route path="teachercoursepanel" element={<TeacherCoursesPanel />} />
         <Route path="hrpanel" element={<HRPanel />}></Route>
         <Route
           path="organizationcoursespanel"
           element={<OrganizationCoursesPanel />}
-        ></Route>
-        <Route path="accountrequests" element={<AccountRequestsPage />}></Route>
+        />
+        <Route path="accounts" element={<AccountRequestsPage />} />
+        <Route path="accounts/users/:userId" element={<UserDetailsPage />} />
       </Route>
-    </Route>
-  )
+      <Route path="/infosheet" element={<InfosheetContainer />} />
+      <Route path="/errors">
+        <Route path="/errors/notapproved" element={<NotApprovedPage />} />
+      </Route>
+    </Route>,
+  ),
 );
 
 function App() {

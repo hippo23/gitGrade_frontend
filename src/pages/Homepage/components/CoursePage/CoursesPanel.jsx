@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import { getTeacherSectionAssignment } from "../../../../api/sql_api";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const TeacherCoursesPanel = (props) => {
+const TeacherCoursesPanel = () => {
   const [teacherCourses, setTeacherCourses] = useState([]);
+
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     (async () => {
-      const res = await getTeacherSectionAssignment(3);
+      const accessToken = await getAccessTokenSilently();
+      const res = await getTeacherSectionAssignment(accessToken, 3);
       console.log(res);
       setTeacherCourses(res);
     })();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
@@ -35,7 +39,6 @@ const TeacherCoursesPanel = (props) => {
               width="16"
               height="16"
               fill="white"
-              class="bi bi-plus-square"
               viewBox="0 0 16 16"
             >
               <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
@@ -63,26 +66,28 @@ const TeacherCoursesPanel = (props) => {
             </tr>
           </thead>
           <tbody>
-            {teacherCourses.map((course) => {
+            {teacherCourses.map((course, index) => {
+              console.log(course);
               return (
-                <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
+                <tr
+                  key={course.coursename + course.sectionname + index}
+                  className="relative h-[1.5rem] bg-white border-y-[1px] border-slate-150"
+                >
                   <td className="pl-[1.2rem] underline hover:text-blue-700 cursor-pointer">
                     {course.coursename}
                   </td>
-                  <td className="p-[1.2rem]">
-                    {course.sectionname}
-                  </td>
+                  <td className="p-[1.2rem]">{course.sectionname}</td>
                   <td></td>
                   <td className="p-[0.5rem]">
-                    {course.completionstatus ? 
+                    {course.completionstatus ? (
                       <p className="text-green-700 bg-green-100 w-fit p-[0.5rem] rounded-md border-[0.1rem] border-green-400">
                         Completed
                       </p>
-                      :
+                    ) : (
                       <p className="text-orange-700 bg-orange-100 w-fit p-[0.5rem] rounded-md border-[0.1rem] border-orange-400">
                         Ongoing
                       </p>
-                    }
+                    )}
                   </td>
                 </tr>
               );

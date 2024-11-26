@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
 import { getPersons } from "../../../../api/sql_api";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const HRPanel = (props) => {
-  const [employees, setEmployees] = useState([])
-  const [roles, setRoles] = useState([])
+  const [employees, setEmployees] = useState([]);
+  const [roles, setRoles] = useState([]);
+
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     (async () => {
-      const res = await getPersons()
-      setEmployees(res)
-    })()
-  }, [])
+      const accessToken = await getAccessTokenSilently();
+      console.log(accessToken);
+      const res = await getPersons(accessToken);
+      console.log(res);
+      setEmployees(res);
+    })();
+  }, [getAccessTokenSilently]);
 
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
@@ -26,7 +32,6 @@ const HRPanel = (props) => {
               width="16"
               height="16"
               fill="currentColor"
-              class="bi bi-search"
               viewBox="0 0 16 16"
             >
               <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
@@ -42,7 +47,6 @@ const HRPanel = (props) => {
               width="16"
               height="16"
               fill="currentColor"
-              class="bi bi-filter"
               viewBox="0 0 16 16"
             >
               <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
@@ -58,7 +62,6 @@ const HRPanel = (props) => {
               width="16"
               height="16"
               fill="white"
-              class="bi bi-plus-square"
               viewBox="0 0 16 16"
             >
               <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
@@ -68,8 +71,8 @@ const HRPanel = (props) => {
         </button>
       </div>
       <div className="h-[100%] w-full overflow-auto">
-        <table className="h-[3rem] table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="relative text-xs text-gray-700 uppercase bg-gray-50">
+        <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="relative h-[5rem] text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Profile Picture
@@ -86,16 +89,21 @@ const HRPanel = (props) => {
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee) => {
-              console.log(employee)
+            {employees.map((employee, index) => {
+              console.log(employee);
               return (
-                <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
+                <tr
+                  key={employee.middlename + employee.firstname + index}
+                  className="h-[1.5rem] bg-white border-y-[1px] border-slate-150"
+                >
                   <td className="px-6 py-3"></td>
-                  <td className="px-6 py-3">{employee.middlename + ', ' + employee.firstname}</td>
+                  <td className="px-6 py-3">
+                    {employee.middlename + ", " + employee.firstname}
+                  </td>
                   <td className="px-6 py-3">{employee.role_name}</td>
                   <td className="px-6 py-3">{employee.birthday}</td>
                 </tr>
-              )
+              );
             })}
             <tr className="bg-white border-b"></tr>
           </tbody>

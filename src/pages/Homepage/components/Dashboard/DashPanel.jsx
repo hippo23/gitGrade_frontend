@@ -1,5 +1,5 @@
 import React from 'react'
-import Announcements from '../Announcements'
+import Announcements from './Announcements'
 
 
 const DashPanel = (props) => {

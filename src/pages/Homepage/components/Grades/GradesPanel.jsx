@@ -1,4 +1,8 @@
+import { useAuth0 } from "@auth0/auth0-react";
+
 const GradesPanel = (props) => {
+
+
   return (
     <div className="h-full w-full grid grid-rows-[auto_1fr]">
       <div className="w-full h-[10rem] px-[2rem] flex items-center justify-around">

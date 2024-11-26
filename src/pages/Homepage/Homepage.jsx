@@ -1,9 +1,29 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import React, { useRef, useState } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+} from "react";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 
-const Homepage = (props) => {
+const Homepage = () => {
   const { logout } = useAuth0();
+  const { getIdTokenClaims } = useAuth0();
+  const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    (async () => {
+      const idTokenClaims = await getIdTokenClaims();
+
+      if (!idTokenClaims["approved"]) {
+        navigate("/errors/notapproved");
+      } else if (!idTokenClaims["filledOutInfoSheet"]) {
+        navigate("/infosheet");
+      }
+    })();
+  }, [getIdTokenClaims]);
 
   return (
     <div className="bg-gray-50 flex-1 h-full max-h-full w-full grid grid-cols-[310px_1fr]">
@@ -175,7 +195,7 @@ const Homepage = (props) => {
           <h1 className="font-bold">Admin</h1>
           <div className="flex flex-col ml-[0.25rem]">
             <NavLink
-              to="/accountrequests"
+              to="/accounts"
               className={({ isActive, isPending }) =>
                 isActive
                   ? "text-blue-400 border-l-[1px] border-blue-400"
@@ -209,10 +229,17 @@ const Homepage = (props) => {
             </NavLink>
           </div>
         </div>
-        <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className="mt-auto text-white text-opacity-[100%] font-bold px-[1rem] py-[0.5rem] rounded-md bg-gray-900">Sign out</button>
+        <button
+          onClick={() =>
+            logout({ logoutParams: { returnTo: window.location.origin } })
+          }
+          className="mt-auto text-white text-opacity-[100%] font-bold px-[1rem] py-[0.5rem] rounded-md bg-gray-900"
+        >
+          Sign out
+        </button>
       </div>
       <div className="bg-white h-full max-h-full overflow-hidden">
-          <Outlet />
+        <Outlet />
       </div>
     </div>
   );
