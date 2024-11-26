@@ -34,6 +34,16 @@ const updateUserAccount = async (accessToken, id, data) => {
   return;
 };
 
+const getAllRoles = async (accessToken, id) => {
+  const response = await axios.get(`${baseUrl}/auth/roles`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response.data;
+};
+
 const getUserRoles = async (accessToken, id) => {
   const response = await axios.get(`${baseUrl}/auth/users/${id}/roles`, {
     headers: {
@@ -45,9 +55,12 @@ const getUserRoles = async (accessToken, id) => {
 };
 
 const deleteUserRoles = async (accessToken, id, data) => {
-  await axios.delete(`${baseUrl}/auth/users/${id}/roles`, data, {
+  await axios.delete(`${baseUrl}/auth/users/${id}/roles`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+    },
+    data: {
+      roles: [...data.roles],
     },
   });
 };
@@ -66,4 +79,5 @@ export {
   getUserRoles,
   deleteUserRoles,
   addUserRoles,
+  getAllRoles,
 };

@@ -20,7 +20,7 @@ const InfosheetPageOne = ({ register, setValue, errors }) => {
 
     window.initAutocomplete = () => {
       const autocomplete = new window.google.maps.places.Autocomplete(
-        addressRef.current
+        addressRef.current,
       );
       autocomplete.setTypes(["geocode"]);
 
@@ -170,7 +170,9 @@ const InfosheetPageOne = ({ register, setValue, errors }) => {
                   d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
                 />
               </svg>
-              <p className="text-left pl-[0.5rem]">{errors.address.message}</p>
+              <p className="text-left pl-[0.5rem]">
+                {errors.address && errors.address.message}
+              </p>
             </div>
           )}
         </div>
@@ -201,7 +203,7 @@ const InfosheetPageOne = ({ register, setValue, errors }) => {
                   d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
                 />
               </svg>
-              <p className="text-left pl-[0.5rem]">{errors.address.message}</p>
+              <p className="text-left pl-[0.5rem]">{errors.birthday.message}</p>
             </div>
           )}
         </div>
@@ -321,9 +323,7 @@ const InfosheetPageThree = ({ control }) => {
           <div className="w-full h-full grid grid-rows-3 gap-[1.5rem]">
             <div
               className={`border-[2px] rounded-md cursor-pointer grid grid-cols-[0.3fr_1fr] ${
-                field.value === true
-                  ? "border-blue-500"
-                  : "border-gray-300"
+                field.value === true ? "border-blue-500" : "border-gray-300"
               }`}
               onClick={() => field.onChange(!field.value)}
             >
@@ -334,9 +334,12 @@ const InfosheetPageThree = ({ control }) => {
               </div>
               <div className="flex flex-col items-center justify-center">
                 <div className="w-[70%]">
-                  <h2 className="font-bold text-[1.1rem]">Privacy statement.</h2>
+                  <h2 className="font-bold text-[1.1rem]">
+                    Privacy statement.
+                  </h2>
                   <p>
-                    I hereby certify that all the information I have entered here is correct.
+                    I hereby certify that all the information I have entered
+                    here is correct.
                   </p>
                 </div>
               </div>

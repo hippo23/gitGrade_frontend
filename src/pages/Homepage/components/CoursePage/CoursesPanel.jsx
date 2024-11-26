@@ -71,7 +71,7 @@ const TeacherCoursesPanel = () => {
               return (
                 <tr
                   key={course.coursename + course.sectionname + index}
-                  className="relative h-[1.5rem] bg-white border-y-[1px] border-slate-150"
+                  className="relative h-[1.5rem] bg-white border-b-[1px] border-slate-150"
                 >
                   <td className="pl-[1.2rem] underline hover:text-blue-700 cursor-pointer">
                     {course.coursename}

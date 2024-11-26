@@ -72,8 +72,8 @@ const HRPanel = (props) => {
       </div>
       <div className="h-[100%] w-full overflow-auto">
         <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="relative h-[5rem] text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
+          <thead className="">
+            <tr className="relative h-[3rem] text-xs text-gray-700 uppercase bg-gray-50">
               <th scope="col" className="px-6 py-3">
                 Profile Picture
               </th>

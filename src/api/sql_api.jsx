@@ -6,8 +6,8 @@ const getAllCourses = async (accessToken) => {
   const res = await axios.get(`${baseUrl}/database/courses`, {
     headers: {
       "content-type": "application/json",
-      "Authorization": `Bearer ${accessToken}`,
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
   return res.data;
@@ -17,8 +17,8 @@ const getPersons = async (accessToken, role_name = "") => {
   const res = await axios.get(`${baseUrl}/database/persons/${role_name}`, {
     headers: {
       "content-type": "application/json",
-      "Authorization": `Bearer ${accessToken}`,
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
   return res.data;
 };
@@ -29,9 +29,9 @@ const getTeacherSectionAssignment = async (accessToken, id) => {
     {
       headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-      }
-    }
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
   );
   return res.data;
 };
@@ -40,8 +40,8 @@ const getStudentGrades = async (accessToken, id) => {
   const res = await axios.get(`${baseUrl}/database/student_grades/${id}`, {
     headers: {
       "content-type": "application/json",
-      "Authorization": `Bearer ${accessToken}`,
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
   return res.data;
 };
@@ -51,16 +51,16 @@ const getCourseSections = async (
   course_name,
   semester,
   start_year,
-  end_year
+  end_year,
 ) => {
   const res = await axios.get(
     `${baseUrl}/database/coursesections/${course_name}/${semester}/${start_year}/${end_year}`,
     {
       headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-      }
-    }
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
   );
   return res.data;
 };
@@ -69,16 +69,16 @@ const getStudentCourseSection = async (
   accessToken,
   course_name,
   course_section_name,
-  semester
+  semester,
 ) => {
   const res = await axios.get(
     `${baseUrl}/database/studentcoursesection/${course_name}/${course_section_name}/${semester}`,
     {
       headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-      }
-    }
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
   );
   return res.data;
 };
@@ -107,16 +107,24 @@ const postAccountRequest = async ({
   await axios.post(`${baseUrl}/database/pendingAccounts`, data, {
     headers: {
       "content-type": "application/json",
-    }
+    },
   });
 };
 
 const getPendingAccounts = async (accessToken) => {
-  const res = await axios.get(
-    `${baseUrl}/database/pendingAccounts`
-  );
+  const res = await axios.get(`${baseUrl}/database/pendingAccounts`);
   return res.data;
-}
+};
+
+const createNewPerson = async (accessToken, data) => {
+  const res = await axios.post(`${baseUrl}/database/person`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return res;
+};
 
 export {
   getAllCourses,
@@ -127,4 +135,5 @@ export {
   getStudentCourseSection,
   postAccountRequest,
   getPendingAccounts,
+  createNewPerson,
 };

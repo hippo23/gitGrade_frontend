@@ -7,8 +7,7 @@ import {
 } from "./InfosheetPages/InfosheetPages";
 import { useForm } from "react-hook-form";
 import { useAuth0 } from "@auth0/auth0-react";
-import { postAccountRequest } from "/src/api/sql_api";
-import axios from "axios";
+import { createNewPerson } from "/src/api/sql_api";
 
 const InfosheetContainer = () => {
   const [pageNumber, setPageNumber] = useState(0);
@@ -27,20 +26,16 @@ const InfosheetContainer = () => {
 
   const { user, getIdTokenClaims, getAccessTokenSilently } = useAuth0();
 
-  const privacyStatement = watch("privacy_statement");
-
   const pages = [
     <InfosheetPageOne
       register={register}
       setValue={setValue}
       errors={errors}
     />,
-    <InfosheetPageTwo control={control} />,
-    <InfosheetPageThree control={control} />,
   ];
 
   useEffect(() => {
-    setTotalPages(pages.length)
+    setTotalPages(pages.length);
   }, []);
 
   const nextPageListener = async () => {
@@ -56,15 +51,26 @@ const InfosheetContainer = () => {
     }
   };
 
-
   const onSubmit = async (data) => {
     const validPage = await trigger();
-    const idTokenClaims = await getIdTokenClaims();
-    console.log(idTokenClaims);
+
+    const token = await getAccessTokenSilently();
     if (validPage) {
-      console.log({ ...data, email: idTokenClaims["email"] });
+      console.log({ ...data });
       // once user has accomplished form, we will add their details to the database
-      postAccountRequest({ ...data, email: idTokenClaims["email"] });
+      const personId = await createNewPerson(token, data);
+
+      // then set the metadata to note that they have accomplished the form, and add their personal user id to the metadata / token
+      const token = await getAccessTokenSilently();
+      console.log(token);
+      const data = {
+        app_metadata: {
+          personId: personId,
+          filledOutInfoSheet: true,
+        },
+      };
+
+      await updateUserAccount(token, user.user_sub, data);
     }
   };
 
@@ -99,7 +105,6 @@ const InfosheetContainer = () => {
             <button
               type="submit"
               className="hover:bg-blue-500 bg-blue-400 px-[1rem] py-[0.5rem] rounded-md text-white"
-              disabled={!privacyStatement}
             >
               Submit
             </button>
