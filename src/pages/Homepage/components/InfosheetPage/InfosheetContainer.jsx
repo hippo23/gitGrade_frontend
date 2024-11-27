@@ -1,5 +1,5 @@
 import { withAuthenticationRequired } from "@auth0/auth0-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import {
   InfosheetPageOne,
   InfosheetPageTwo,
@@ -8,6 +8,8 @@ import {
 import { useForm } from "react-hook-form";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createNewPerson } from "/src/api/sql_api";
+import { updateUserAccount } from "/src/api/auth0_api";
+import { useNavigate } from "react-router-dom";
 
 const InfosheetContainer = () => {
   const [pageNumber, setPageNumber] = useState(0);
@@ -15,14 +17,14 @@ const InfosheetContainer = () => {
   const [currentAppMetadata, setCurrentAppMetadata] = useState(null);
 
   const {
-    control,
     register,
     handleSubmit,
-    watch,
     setValue,
     trigger,
     formState: { errors },
   } = useForm();
+
+  const navigate = useNavigate();
 
   const { user, getIdTokenClaims, getAccessTokenSilently } = useAuth0();
 
@@ -33,6 +35,20 @@ const InfosheetContainer = () => {
       errors={errors}
     />,
   ];
+
+  useLayoutEffect(() => {
+    (async () => {
+      const idTokenClaims = await getIdTokenClaims();
+      console.log(idTokenClaims);
+
+      if (!idTokenClaims["approved"]) {
+        navigate("/errors/notapproved");
+      } else if (idTokenClaims["filledOutInfoSheet"]) {
+        console.log("redirecting");
+        navigate("/");
+      }
+    })();
+  }, [getIdTokenClaims]);
 
   useEffect(() => {
     setTotalPages(pages.length);
@@ -55,22 +71,23 @@ const InfosheetContainer = () => {
     const validPage = await trigger();
 
     const token = await getAccessTokenSilently();
+
+    console.log(data);
+    console.log(user.sub);
     if (validPage) {
       console.log({ ...data });
       // once user has accomplished form, we will add their details to the database
-      const personId = await createNewPerson(token, data);
+      const person = await createNewPerson(token, data);
 
       // then set the metadata to note that they have accomplished the form, and add their personal user id to the metadata / token
-      const token = await getAccessTokenSilently();
-      console.log(token);
-      const data = {
+      const metadata = {
         app_metadata: {
-          personId: personId,
+          personId: person.personid,
           filledOutInfoSheet: true,
         },
       };
 
-      await updateUserAccount(token, user.user_sub, data);
+      await updateUserAccount(token, user.sub, metadata);
     }
   };
 

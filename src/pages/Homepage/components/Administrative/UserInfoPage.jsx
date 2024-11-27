@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import {
   getUserAccounts,
   getUserRoles,
-  deleteUserRoles,
+  disableUserRoles,
+  clearUserRoleRecords,
   addUserRoles,
 } from "/src/api/auth0_api";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -12,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const UserDetailsPage = () => {
   const { userId } = useParams();
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, getIdTokenClaims } = useAuth0();
   const [userInfo, setUserInfo] = useState({});
   const [currentTab, setCurrentTab] = useState(0);
   const [originalRoles, setOriginalRoles] = useState({});
@@ -36,14 +37,17 @@ const UserDetailsPage = () => {
       const roles_data = {
         admin: {
           active: false,
+          name: "admin",
           code: "rol_SoW0bAKj2EFJjq9p",
         },
         student: {
           active: false,
+          name: "student",
           code: "rol_O4q4clcTvOeed7q6",
         },
         faculty: {
           active: false,
+          name: "faculty",
           code: "rol_BSKVuiyht3oW58My",
         },
       };
@@ -74,6 +78,7 @@ const UserDetailsPage = () => {
   const saveRoleChanges = async () => {
     saveButton.current.disabled = true;
     const token = await getAccessTokenSilently();
+    const idTokenClaims = await getIdTokenClaims();
 
     // need to delete all the previous roles of the user
     const deleteRoles = [];
@@ -83,21 +88,26 @@ const UserDetailsPage = () => {
       }
     });
 
-    await deleteUserRoles(token, userId, {
+    await disableUserRoles(token, userId, {
       roles: [...deleteRoles],
     });
 
     // then add the added roles to the user
     const addRoles = [];
+    const roleNames = [];
     Object.keys(roles).forEach(function (key, index) {
       if (roles[key].active == true) {
         addRoles.push(originalRoles[key].code);
+        roleNames.push(originalRoles[key].name);
       }
     });
 
+    console.log(roleNames);
     if (addRoles.length > 0) {
       await addUserRoles(token, userId, {
         roles: [...addRoles],
+        role_names: [...roleNames],
+        personid: idTokenClaims["personId"],
       });
     }
 
@@ -106,18 +116,22 @@ const UserDetailsPage = () => {
     const roles_data = {
       admin: {
         active: false,
+        name: "admin",
         code: "rol_SoW0bAKj2EFJjq9p",
       },
       student: {
         active: false,
+        name: "student",
         code: "rol_O4q4clcTvOeed7q6",
       },
       faculty: {
         active: false,
+        name: "faculty",
         code: "rol_BSKVuiyht3oW58My",
       },
     };
 
+    // set the new roles to avoid any data conflicts
     currentRoles.map((role) => {
       roles_data[role.name.toLowerCase()].active = true;
     });
@@ -130,6 +144,53 @@ const UserDetailsPage = () => {
 
     toast("👍 User permissions have been updated!");
     saveButton.current.disabled = false;
+  };
+
+  const handleClearRole = async (code, name) => {
+    const token = await getAccessTokenSilently();
+    const idTokenClaims = await getIdTokenClaims();
+
+    await disableUserRoles(token, userId, {
+      roles: [code],
+    });
+
+    await clearUserRoleRecords(token, userId, {
+      role_names: [name],
+      personid: idTokenClaims["personId"],
+    });
+
+    const currentRoles = await getUserRoles(token, userId);
+
+    const roles_data = {
+      admin: {
+        active: false,
+        name: "admin",
+        code: "rol_SoW0bAKj2EFJjq9p",
+      },
+      student: {
+        active: false,
+        name: "student",
+        code: "rol_O4q4clcTvOeed7q6",
+      },
+      faculty: {
+        active: false,
+        name: "faculty",
+        code: "rol_BSKVuiyht3oW58My",
+      },
+    };
+
+    // set the new roles to avoid any data conflicts
+    currentRoles.map((role) => {
+      roles_data[role.name.toLowerCase()].active = true;
+    });
+    setRoles({
+      ...roles_data,
+    });
+    setOriginalRoles({
+      ...roles_data,
+    });
+
+    toast("👍 User records have been cleared!");
   };
 
   return (
@@ -240,8 +301,15 @@ const UserDetailsPage = () => {
                           className="m-auto w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                         />
                       </td>
-                      <td className="px-6 py-3 text-red-500 underline">
-                        Clear Records
+                      <td className="px-6 py-3 text-red-500">
+                        <button
+                          className="underline"
+                          onClick={() =>
+                            handleClearRole("rol_SoW0bAKj2EFJjq9p", "admin")
+                          }
+                        >
+                          Clear Records
+                        </button>
                       </td>
                     </tr>
                     <tr className="h-[5rem] items-center">
@@ -261,7 +329,14 @@ const UserDetailsPage = () => {
                         />
                       </td>
                       <td className="px-6 py-3 text-red-500 underline">
-                        Clear Records
+                        <button
+                          className="underline"
+                          onClick={() =>
+                            handleClearRole("rol_BSKVuiyht3oW58My", "faculty")
+                          }
+                        >
+                          Clear Records
+                        </button>
                       </td>
                     </tr>
                     <tr className="h-[5rem]">
@@ -280,7 +355,14 @@ const UserDetailsPage = () => {
                         />
                       </td>
                       <td className="px-6 py-3 text-red-500 underline">
-                        Clear Records
+                        <button
+                          className="underline"
+                          onClick={() =>
+                            handleClearRole("rol_O4q4clcTvOeed7q6", "student")
+                          }
+                        >
+                          Clear Records
+                        </button>
                       </td>
                     </tr>
                     <tr></tr>

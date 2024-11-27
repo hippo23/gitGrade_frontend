@@ -123,7 +123,7 @@ const createNewPerson = async (accessToken, data) => {
     },
   });
 
-  return res;
+  return res.data;
 };
 
 export {
