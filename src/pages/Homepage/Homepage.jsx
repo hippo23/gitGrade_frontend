@@ -10,7 +10,7 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 
 const Homepage = () => {
   const { logout } = useAuth0();
-  const { getIdTokenClaims } = useAuth0();
+  const { getIdTokenClaims, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
@@ -24,6 +24,13 @@ const Homepage = () => {
       }
     })();
   }, [getIdTokenClaims]);
+
+  useEffect(() => {
+    (async () => {
+      const token = await getIdTokenClaims();
+      console.log(token);
+    })();
+  }, [getIdTokenClaims, getAccessTokenSilently]);
 
   return (
     <div className="bg-gray-50 flex-1 h-full max-h-full w-full grid grid-cols-[310px_1fr]">
@@ -63,7 +70,7 @@ const Homepage = () => {
               </p>
             </NavLink>
             <NavLink
-              to="gradespanel"
+              to="/student/gradespanel"
               className={({ isActive, isPending }) =>
                 isActive
                   ? "text-blue-400 border-l-[1px] border-blue-400"
@@ -94,7 +101,7 @@ const Homepage = () => {
               </p>
             </NavLink>
             <NavLink
-              to="teachercoursepanel"
+              to="/faculty/teachercoursepanel"
               className={({ isActive, isPending }) =>
                 isActive
                   ? "text-blue-400 border-l-[1px] border-blue-400"
@@ -127,37 +134,7 @@ const Homepage = () => {
               </p>
             </NavLink>
             <NavLink
-              to="hrpanel"
-              className={({ isActive, isPending }) =>
-                isActive
-                  ? "text-blue-400 border-l-[1px] border-blue-400"
-                  : "text-gray-800 border-l-[1px] border-gray-300"
-              }
-            >
-              <p
-                className={`h-[2.5rem] text-[0.8rem] flex items-center justify-start pl-[0.75rem] hover:bg-blue-50`}
-              >
-                <span>
-                  <svg
-                    className="mr-[1rem] w-4 h-4 text-gray-800 dark:text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-                    <path
-                      fillRule="evenodd"
-                      d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
-                    />
-                  </svg>
-                </span>
-                Employees
-              </p>
-            </NavLink>
-            <NavLink
-              to="organizationcoursespanel"
+              to="/admin/organizationcoursespanel"
               className={({ isActive, isPending }) =>
                 isActive
                   ? "text-blue-400 border-l-[1px] border-blue-400"
@@ -195,7 +172,7 @@ const Homepage = () => {
           <h1 className="font-bold">Admin</h1>
           <div className="flex flex-col ml-[0.25rem]">
             <NavLink
-              to="/accounts"
+              to="/admin/accounts"
               className={({ isActive, isPending }) =>
                 isActive
                   ? "text-blue-400 border-l-[1px] border-blue-400"
@@ -227,6 +204,36 @@ const Homepage = () => {
                 Account Requests
               </p>
             </NavLink>
+            <NavLink
+              to="/admin/hrpanel"
+              className={({ isActive, isPending }) =>
+                isActive
+                  ? "text-blue-400 border-l-[1px] border-blue-400"
+                  : "text-gray-800 border-l-[1px] border-gray-300"
+              }
+            >
+              <p
+                className={`h-[2.5rem] text-[0.8rem] flex items-center justify-start pl-[0.75rem] hover:bg-blue-50`}
+              >
+                <span>
+                  <svg
+                    className="mr-[1rem] w-4 h-4 text-gray-800 dark:text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                    <path
+                      fillRule="evenodd"
+                      d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
+                    />
+                  </svg>
+                </span>
+                Employees
+              </p>
+            </NavLink>
           </div>
         </div>
         <button
@@ -238,7 +245,7 @@ const Homepage = () => {
           Sign out
         </button>
       </div>
-      <div className="bg-white h-full max-h-full overflow-hidden">
+      <div className="bg-white h-full max-h-full overflow-y-auto">
         <Outlet />
       </div>
     </div>

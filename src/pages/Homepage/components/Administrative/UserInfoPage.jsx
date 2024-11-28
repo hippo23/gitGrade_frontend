@@ -78,7 +78,9 @@ const UserDetailsPage = () => {
   const saveRoleChanges = async () => {
     saveButton.current.disabled = true;
     const token = await getAccessTokenSilently();
-    const idTokenClaims = await getIdTokenClaims();
+    const user = await getUserAccounts(token, { user_id: userId });
+    console.log(user);
+    const personId = user[0].app_metadata.personId;
 
     // need to delete all the previous roles of the user
     const deleteRoles = [];
@@ -88,9 +90,11 @@ const UserDetailsPage = () => {
       }
     });
 
-    await disableUserRoles(token, userId, {
-      roles: [...deleteRoles],
-    });
+    if (deleteRoles.length > 0) {
+      await disableUserRoles(token, userId, {
+        roles: [...deleteRoles],
+      });
+    }
 
     // then add the added roles to the user
     const addRoles = [];
@@ -107,7 +111,7 @@ const UserDetailsPage = () => {
       await addUserRoles(token, userId, {
         roles: [...addRoles],
         role_names: [...roleNames],
-        personid: idTokenClaims["personId"],
+        personid: personId,
       });
     }
 
@@ -148,7 +152,8 @@ const UserDetailsPage = () => {
 
   const handleClearRole = async (code, name) => {
     const token = await getAccessTokenSilently();
-    const idTokenClaims = await getIdTokenClaims();
+    const user = await getUserAccounts(token, { user_id: userId });
+    const personId = user[0].app_metadata.personId;
 
     await disableUserRoles(token, userId, {
       roles: [code],
@@ -156,7 +161,7 @@ const UserDetailsPage = () => {
 
     await clearUserRoleRecords(token, userId, {
       role_names: [name],
-      personid: idTokenClaims["personId"],
+      personid: personId,
     });
 
     const currentRoles = await getUserRoles(token, userId);

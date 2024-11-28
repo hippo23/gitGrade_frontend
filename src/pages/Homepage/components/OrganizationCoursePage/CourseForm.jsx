@@ -1,50 +1,114 @@
+import { useForm } from "react-hook-form";
+
 const CourseForm = ({ hideAddFormListener }) => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = (values) => console.log(values);
+
   return (
-    <div className="bg-white border-[0.1rem] shadow-md border-gray-200 rounded-[1rem] h-[19rem] w-[30rem] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] p-[0.2rem] grid grid-rows-[1.5fr_0.7fr]">
-      <div className="p-[1rem] flex flex-col justify-center">
-        <p className="mb-[2rem] text-[1.3rem] text-[.9rem] font-bold">
-          Enter a new course
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col bg-white border-[0.1rem] shadow-md border-gray-200 rounded-md min-h-[25rem] w-[30rem] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] pt-[2rem] pb-[3rem] px-[2rem]"
+    >
+      <button
+        onClick={hideAddFormListener}
+        className="mb-[2rem] mr-auto underline text-gray-500"
+      >
+        <p>Back to courses</p>
+      </button>
+      <div className="mb-[2rem]">
+        <h1 className="font-bold text-[1.5rem]">Enter a new course.</h1>
+        <p className="text-gray-600 text-[0.85rem]">
+          Type in the details to register a new course to the University...
         </p>
-        <div className="h-[80%] grid grid-rows-2 grid-cols-[0.5fr_1fr] justify-start drop-shadow-none gap-[0.1rem] text-[0.85rem] text-gray-700">
-          <div className="w-full h-full flex items-center font-bold">
-            <p>Course Name</p>
-          </div>
-          <div className="flex items-center ml-auto w-full">
-            <input className="w-full overflow-x-scroll bg-slate-100 bg-white py-[0.5rem] px-[0.1rem] rounded-md w-[45%]"></input>
-          </div>
-          <div className="w-full h-full flex items-center font-bold">
-            <p className="mr-auto">Number of units</p>
-          </div>
-          <div className="flex items-center ml-auto w-full">
-            <input className="w-full bg-slate-100 bg-white px-[0.1rem] py-[0.5rem] rounded-md w-[45%]"></input>
-          </div>
-        </div>
       </div>
-      <div className="flex flex-row items-center p-[0.5rem] flex">
-        <button className="ml-auto shadow-lg hover:shadow-md flex justify-center w-fit mr-[1rem] p-[0.5rem] rounded-[1.2rem] bg-orange-400 text-green-100 font-bold flex items-center hover:bg-orange-500 text-[0.80rem]">
-          <span className="mr-[0.5rem]">
+      <div className="flex flex-col mb-[3rem]">
+        <label className="mb-[1rem]">Course Name</label>
+        <input
+          className="border-b-[1px] focus:border-blue-400 outline-none"
+          {...register("name", {
+            required: "Please enter a name.",
+          })}
+        ></input>
+        {errors.name && (
+          <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
               fill="currentColor"
-              class="bi bi-box-arrow-in-right"
               viewBox="0 0 16 16"
+              className="mr-[0.5rem]"
             >
-              <path
-                fill-rule="evenodd"
-                d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"
-              />
-              <path
-                fill-rule="evenodd"
-                d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"
-              />
+              <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
+              <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
             </svg>
-          </span>
-          Add Course
-        </button>
+            {errors.name.message}
+          </div>
+        )}
       </div>
-    </div>
+      <div className="flex flex-col mb-[3rem]">
+        <label className="mb-[1rem]">Number of Units</label>
+        <input
+          type="number"
+          className="border-b-[1px] focus:border-blue-400 outline-none"
+          {...register("units", {
+            required: "Please enter the number of units.",
+            valueAsNumber: true,
+          })}
+        ></input>
+        {errors.units && (
+          <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              className="mr-[0.5rem]"
+            >
+              <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
+              <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+            </svg>
+            {errors.units.message}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col mb-[3rem]">
+        <label className="mb-[1rem]">Description</label>
+        <input
+          className="border-b-[1px] focus:border-blue-400 outline-none"
+          {...register("description", {
+            required: "Please enter a description.",
+          })}
+        ></input>
+        {errors.description && (
+          <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              className="mr-[0.5rem]"
+            >
+              <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
+              <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+            </svg>
+            {errors.description && errors.description.message}
+          </div>
+        )}
+      </div>
+      <button
+        type="Submit"
+        className="w-full h-[2.5rem] bg-black rounded-md text-white mt-auto"
+      >
+        Submit
+      </button>
+    </form>
   );
 };
 

@@ -88,6 +88,8 @@ const InfosheetContainer = () => {
       };
 
       await updateUserAccount(token, user.sub, metadata);
+
+      navigate("/");
     }
   };
 

@@ -14,6 +14,8 @@ const AccountRequestsPage = () => {
     const token = await getAccessTokenSilently();
     const users = await getUserAccounts(token);
 
+    console.log(users);
+
     setPendingAccounts(users);
   };
   // this is where we get the current user information
@@ -36,7 +38,7 @@ const AccountRequestsPage = () => {
     await updateUserAccount(token, user_id, data);
 
     const currentData = pendingAccounts;
-    currentData[index].approved = !currentStatus;
+    currentData[index].app_metadata.approved = !currentStatus;
 
     setPendingAccounts([...currentData]);
     toast("👍 User status succesfully changed");
@@ -131,19 +133,19 @@ const AccountRequestsPage = () => {
                     <td className="px-6 py-3">
                       <button
                         className={`${
-                          account.approved
+                          account.app_metadata.approved
                             ? "text-green-700 bg-green-100 border-green-400"
                             : "text-orange-700 bg-orange-100 border-orange-400"
                         } w-fit p-[0.5rem] rounded-md border-[0.1rem]`}
                         onClick={() => {
                           toggleApprovedListener(
                             account.user_id,
-                            account.approved,
+                            account.app_metadata.approved,
                             index,
                           );
                         }}
                       >
-                        {account.approved ? "Enabled" : "Disabled"}
+                        {account.app_metadata.approved ? "Enabled" : "Disabled"}
                       </button>
                     </td>
                   </tr>
