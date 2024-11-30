@@ -1,6 +1,7 @@
 import CourseForm from "./CourseForm";
 import React, { useEffect, useState } from "react";
-import { getAllCourses } from "../../../../api/sql_api";
+import { getAllCourses, createCourse } from "../../../../api/sql_api";
+import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const OrganizationCoursesPanel = (props) => {
@@ -13,6 +14,7 @@ const OrganizationCoursesPanel = (props) => {
     (async () => {
       const accessToken = await getAccessTokenSilently();
       const res = await getAllCourses(accessToken);
+      console.log(res);
       setCourses(res);
     })();
   }, [getAccessTokenSilently, getIdTokenClaims]);
@@ -25,10 +27,23 @@ const OrganizationCoursesPanel = (props) => {
     setShowAddForm(false);
   };
 
+  const onSubmit = async (values) => {
+    setShowAddForm(false);
+    const token = await getAccessTokenSilently();
+    await createCourse(token, values);
+    const updatedCourses = await getAllCourses(token);
+    console.log(updatedCourses);
+    setCourses([...updatedCourses]);
+  };
+
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
       {showAddForm ? (
-        <CourseForm hideAddFormListener={hideAddFormListener} />
+        <CourseForm
+          hideAddFormListener={hideAddFormListener}
+          setCourses={setCourses}
+          onSubmit={onSubmit}
+        />
       ) : (
         ""
       )}
@@ -75,7 +90,7 @@ const OrganizationCoursesPanel = (props) => {
                 Class Code
               </th>
               <th scope="col" className="px-6 py-3">
-                Department
+                Description
               </th>
               <th scope="col" className="px-6 py-3">
                 Number of Units
@@ -89,9 +104,13 @@ const OrganizationCoursesPanel = (props) => {
                   key={course.name}
                   className="h-[1.5rem] bg-white border-y-[1px] border-slate-150"
                 >
-                  <td className="px-6 py-3">{course.name}</td>
+                  <Link to={`${course.courseid}`}>
+                    <td className="px-6 py-3 text-blue-500 underline">
+                      {course.name}
+                    </td>
+                  </Link>
                   <td></td>
-                  <td className="px-6 py-3">Criminology</td>
+                  <td className="px-6 py-3">{course.description}</td>
                   <td className="px-6 py-3">{course.units}</td>
                 </tr>
               );

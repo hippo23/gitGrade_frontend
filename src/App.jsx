@@ -18,11 +18,11 @@ import GradesPanel from "./pages/Homepage/components/Grades/GradesPanel";
 import HRPanel from "./pages/Homepage/components/HRPage/HRPanel";
 import TeacherCoursesPanel from "./pages/Homepage/components/CoursePage/CoursesPanel";
 import OrganizationCoursesPanel from "./pages/Homepage/components/OrganizationCoursePage/OrganizationCoursesPanel";
+import CourseSection from "./pages/Homepage/components/OrganizationCoursePage/CourseSection";
 import AccountRequestsPage from "./pages/Homepage/components/Administrative/AccountRequestsPage";
 import InfosheetContainer from "./pages/Homepage/components/InfosheetPage/InfosheetContainer";
 import NotApprovedPage from "./pages/Homepage/components/Errors/NotApproved";
 import UserDetailsPage from "./pages/Homepage/components/Administrative/UserInfoPage";
-import Lottie from "lottie-react";
 import UnauthorizedPage from "./pages/Homepage/components/Errors/Unauthorized";
 
 const Auth0ProviderLayout = () => {
@@ -123,6 +123,10 @@ const routerElements = createBrowserRouter(
           <Route
             path="organizationcoursespanel"
             element={<OrganizationCoursesPanel />}
+          />
+          <Route
+            path="organizationcoursespanel/:courseId"
+            element={<CourseSection />}
           />
           <Route path="hrpanel" element={<HRPanel />}></Route>
           <Route path="accounts" element={<AccountRequestsPage />} />

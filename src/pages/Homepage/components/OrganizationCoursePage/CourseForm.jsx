@@ -1,12 +1,15 @@
 import { useForm } from "react-hook-form";
+import { createCourse, getAllCourses } from "/src/api/sql_api";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const CourseForm = ({ hideAddFormListener }) => {
+const CourseForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm();
-  const onSubmit = (values) => console.log(values);
+
+  const { getAccessTokenSilently } = useAuth0();
 
   return (
     <form
@@ -29,11 +32,11 @@ const CourseForm = ({ hideAddFormListener }) => {
         <label className="mb-[1rem]">Course Name</label>
         <input
           className="border-b-[1px] focus:border-blue-400 outline-none"
-          {...register("name", {
+          {...register("courseName", {
             required: "Please enter a name.",
           })}
         ></input>
-        {errors.name && (
+        {errors.courseName && (
           <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +49,7 @@ const CourseForm = ({ hideAddFormListener }) => {
               <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
               <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
             </svg>
-            {errors.name.message}
+            {errors.courseName.message}
           </div>
         )}
       </div>

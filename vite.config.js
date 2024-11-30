@@ -5,6 +5,11 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    mimeTypes: {
+      "application/javascript": ["jsx"],
+    },
+  },
   plugins: [react(), svgr()],
   base: "/",
   resolve: {

@@ -46,22 +46,16 @@ const getStudentGrades = async (accessToken, id) => {
   return res.data;
 };
 
-const getCourseSections = async (
-  accessToken,
-  course_name,
-  semester,
-  start_year,
-  end_year,
-) => {
-  const res = await axios.get(
-    `${baseUrl}/database/coursesections/${course_name}/${semester}/${start_year}/${end_year}`,
-    {
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+const getCourseSections = async (accessToken, data) => {
+  console.log(data);
+  const res = await axios.get(`${baseUrl}/database/courses/section`, {
+    params: data,
+    headers: {
+      "content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+  });
+
   return res.data;
 };
 
@@ -126,6 +120,14 @@ const createNewPerson = async (accessToken, data) => {
   return res.data;
 };
 
+const createCourse = async (accessToken, data) => {
+  await axios.post(`${baseUrl}/database/courses`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export {
   getAllCourses,
   getPersons,
@@ -136,4 +138,5 @@ export {
   postAccountRequest,
   getPendingAccounts,
   createNewPerson,
+  createCourse,
 };
