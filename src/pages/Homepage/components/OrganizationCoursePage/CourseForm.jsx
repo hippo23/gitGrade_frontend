@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { createCourse, getAllCourses } from "/src/api/sql_api";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const CourseForm = ({ hideAddFormListener, setCourses, onSubmit }) => {

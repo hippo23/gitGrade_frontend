@@ -13,8 +13,11 @@ const getAllCourses = async (accessToken) => {
   return res.data;
 };
 
-const getPersons = async (accessToken, role_name = "") => {
-  const res = await axios.get(`${baseUrl}/database/persons/${role_name}`, {
+const getPersons = async (accessToken, roleName = null) => {
+  const res = await axios.get(`${baseUrl}/database/persons`, {
+    params: {
+      roleName: roleName,
+    },
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${accessToken}`,
@@ -128,6 +131,113 @@ const createCourse = async (accessToken, data) => {
   });
 };
 
+const getAuthIds = async (accessToken, data) => {
+  await axios.get(`${baseUrl}/database/authid`, {
+    params: {
+      yearId: data.yearId,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+const createCourseSection = async (accessToken, data) => {
+  const res = await axios.post(
+    `${baseUrl}/database/courses/coursesection`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+const updateCourseSection = async (accessToken, data) => {
+  await axios.patch(`${baseUrl}/database/courses/coursesection`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+const deleteCourseSection = async (accessToken, data) => {
+  await axios.delete(`${baseUrl}/database/courses/coursesection`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    data: {
+      ...data,
+    },
+  });
+};
+
+const assignTeachersToCourseSection = async (accessToken, data) => {
+  await axios.post(`${baseUrl}/database/courses/coursesection/teacher`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+const deleteTeachersFromCourseSection = async (accessToken, data) => {
+  await axios.delete(`${baseUrl}/database/courses/coursesection/teacher`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    data: {
+      ...data,
+    },
+  });
+};
+
+const getCalendarSessions = async (accessToken) => {
+  const res = await axios.get(`${baseUrl}/database/calendar_sessions`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return res.data;
+};
+
+const deleteCalendarSession = async (accessToken, data) => {
+  await axios.delete(`${baseUrl}/database/calendar_sessions`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    data: {
+      ...data,
+    },
+  });
+};
+
+const deleteCalendarSessionSemester = async (accessToken, data) => {
+  await axios.delete(`${baseUrl}/database/calendar_sessions/semester`, {
+    params: {
+      ...data,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+const getCalendarSessionSemester = async (accessToken) => {
+  const res = await axios.get(
+    `${baseUrl}/database/calendar_sessions/semester`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return res.data[0].jsonb_object_agg;
+};
+
 export {
   getAllCourses,
   getPersons,
@@ -139,4 +249,13 @@ export {
   getPendingAccounts,
   createNewPerson,
   createCourse,
+  getCalendarSessions,
+  deleteCalendarSession,
+  deleteCalendarSessionSemester,
+  getCalendarSessionSemester,
+  createCourseSection,
+  updateCourseSection,
+  deleteCourseSection,
+  assignTeachersToCourseSection,
+  deleteTeachersFromCourseSection,
 };
