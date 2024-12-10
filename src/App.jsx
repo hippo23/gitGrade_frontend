@@ -24,6 +24,7 @@ import InfosheetContainer from "./pages/Homepage/components/InfosheetPage/Infosh
 import NotApprovedPage from "./pages/Homepage/components/Errors/NotApproved";
 import UserDetailsPage from "./pages/Homepage/components/Administrative/UserInfoPage";
 import UnauthorizedPage from "./pages/Homepage/components/Errors/Unauthorized";
+import CourseSectionDetails from "./pages/Homepage/components/OrganizationCoursePage/CourseSectionGradesDetails";
 
 const Auth0ProviderLayout = () => {
   // customize redirect callback functoin for react router
@@ -56,7 +57,6 @@ const ProtectedRoute = ({ requiredRoles = [] }) => {
     (async () => {
       const token = await getIdTokenClaims();
       const roles = token["https://stcf.com/roles"];
-      console.log(roles);
       const hasRole =
         requiredRoles.length === 0 ||
         roles.some((role) => requiredRoles.includes(role.toLowerCase()));
@@ -127,6 +127,10 @@ const routerElements = createBrowserRouter(
           <Route
             path="organizationcoursespanel/:courseId"
             element={<CourseSection />}
+          />
+          <Route
+            path="organizationcoursespanel/:courseId/:courseSectionId"
+            element={<CourseSectionDetails />}
           />
           <Route path="hrpanel" element={<HRPanel />}></Route>
           <Route path="accounts" element={<AccountRequestsPage />} />

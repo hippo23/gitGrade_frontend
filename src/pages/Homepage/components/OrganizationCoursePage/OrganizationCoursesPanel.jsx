@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getAllCourses, createCourse } from "../../../../api/sql_api";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import Table from "../../reused_components/Table";
 
 const OrganizationCoursesPanel = (props) => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -14,7 +15,6 @@ const OrganizationCoursesPanel = (props) => {
     (async () => {
       const accessToken = await getAccessTokenSilently();
       const res = await getAllCourses(accessToken);
-      console.log(res);
       setCourses(res);
     })();
   }, [getAccessTokenSilently, getIdTokenClaims]);
@@ -32,9 +32,43 @@ const OrganizationCoursesPanel = (props) => {
     const token = await getAccessTokenSilently();
     await createCourse(token, values);
     const updatedCourses = await getAllCourses(token);
-    console.log(updatedCourses);
+
     setCourses([...updatedCourses]);
   };
+
+  const columnAttr = [
+    {
+      id: "name",
+      render: (data, row) => {
+        return (
+          <Link
+            className="text-blue-600 underline"
+            to={`/admin/organizationcoursespanel/${row.courseid}`}
+          >
+            {row[`${data}`]}
+          </Link>
+        );
+      },
+    },
+    {
+      id: "",
+      render: (data, row) => {
+        return row[`${data}`];
+      },
+    },
+    {
+      id: "description",
+      render: (data, row) => {
+        return row[`${data}`];
+      },
+    },
+    {
+      id: "units",
+      render: (data, row) => {
+        return row[`${data}`];
+      },
+    },
+  ];
 
   return (
     <div className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]">
@@ -80,44 +114,17 @@ const OrganizationCoursesPanel = (props) => {
         </button>
       </div>
       <div className="h-[100%] w-full overflow-auto">
-        <table className="table-auto m-auto h-full overflow-hidden w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="">
-            <tr className="h-[1.5rem] bg-white border-y-[1px] border-slate-150">
-              <th scope="col" className="px-6 py-3">
-                Course Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Class Code
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Description
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Number of Units
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {courses.map((course) => {
-              return (
-                <tr
-                  key={course.name}
-                  className="h-[1.5rem] bg-white border-y-[1px] border-slate-150"
-                >
-                  <Link to={`${course.courseid}`}>
-                    <td className="px-6 py-3 text-blue-500 underline">
-                      {course.name}
-                    </td>
-                  </Link>
-                  <td></td>
-                  <td className="px-6 py-3">{course.description}</td>
-                  <td className="px-6 py-3">{course.units}</td>
-                </tr>
-              );
-            })}
-            <tr className="table-row-group bg-white border-b"></tr>
-          </tbody>
-        </table>
+        <Table
+          rowHeight="h-[3rem]"
+          headers={[
+            "Course Name",
+            "Class Code",
+            "Description",
+            "Number of units",
+          ]}
+          columnAttr={columnAttr}
+          rows={courses}
+        />
       </div>
     </div>
   );

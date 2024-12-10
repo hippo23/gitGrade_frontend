@@ -11,9 +11,7 @@ const HRPanel = (props) => {
   useEffect(() => {
     (async () => {
       const accessToken = await getAccessTokenSilently();
-      console.log(accessToken);
       const res = await getPersons(accessToken);
-      console.log(res);
       setEmployees(res);
     })();
   }, [getAccessTokenSilently]);

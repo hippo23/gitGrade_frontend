@@ -6,6 +6,8 @@ import {
   getCalendarSessions,
   getCalendarSessionSemester,
 } from "/src/api/sql_api";
+import CheckboxForm from "../../reused_components/CheckboxForm";
+import ErrorIconOne from "/src/assets/exclamation-diamond.svg?react";
 
 const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
   const [teachers, setTeachers] = useState([]);
@@ -88,28 +90,14 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
         </div>
         <div className="w-full flex"></div>
         <div className="bg-gray-100 rounded-md flex-col flex justify-start items-start p-[1rem] overflow-y-auto">
-          {teachers.map((teacher, index) => {
-            return (
-              <div class="flex items-center bg-white p-[0.5rem] mb-[1rem] rounded-md h-fit w-fit">
-                <input
-                  type="checkbox"
-                  value={teacher.personid}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                  {...register(`teachers.${index}.value`, {
-                    onChange: () => {
-                      toggleCheckbox(teacher, index);
-                    },
-                  })}
-                />
-                <label
-                  for="default-checkbox"
-                  class="ms-2 text-sm font-medium text-black"
-                >
-                  {`${teacher.lastname}, ${teacher.firstname} ${teacher.middlename}`}
-                </label>
-              </div>
-            );
-          })}
+          <CheckboxForm
+            dataset={teachers}
+            register={register}
+            field_name="teachers"
+            value_key="personid"
+            label_key={["lastname", "firstname", "middlename"]}
+            onChangeCallback={toggleCheckbox}
+          />
         </div>
       </div>
       <div className="flex flex-col">
@@ -136,17 +124,7 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
           ></input>
           {errors.sectionName && (
             <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-                className="mr-[0.5rem]"
-              >
-                <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
-                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
-              </svg>
+              <ErrorIconOne />
               {errors.sectionName.message}
             </div>
           )}
@@ -163,17 +141,7 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
           ></input>
           {errors.capacity && (
             <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-                className="mr-[0.5rem]"
-              >
-                <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
-                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
-              </svg>
+              <ErrorIconOne />
               {errors.capacity.message}
             </div>
           )}
@@ -198,17 +166,7 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
             </select>
             {errors.academic_year && (
               <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  className="mr-[0.5rem]"
-                >
-                  <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
-                  <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
-                </svg>
+                <ErrorIconOne />
                 {errors.academic_year.message}
               </div>
             )}
@@ -232,17 +190,6 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
             </select>
             {errors.semester && (
               <div className="bg-red-300 text-red-900 rounded-md px-[0.5rem] py-[0.5rem] mt-[0.5rem] flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  className="mr-[0.5rem]"
-                >
-                  <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z" />
-                  <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
-                </svg>
                 {errors.semester.message}
               </div>
             )}

@@ -28,7 +28,6 @@ const Homepage = () => {
   useEffect(() => {
     (async () => {
       const token = await getIdTokenClaims();
-      console.log(token);
     })();
   }, [getIdTokenClaims, getAccessTokenSilently]);
 
