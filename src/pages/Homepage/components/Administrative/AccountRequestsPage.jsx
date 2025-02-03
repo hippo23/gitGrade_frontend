@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AccountRequestsPage = () => {
-  const [pendingAccounts, setPendingAccounts] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const { getAccessTokenSilently } = useAuth0();
 
   const reloadData = async () => {
@@ -16,7 +16,7 @@ const AccountRequestsPage = () => {
 
     console.log(users);
 
-    setPendingAccounts(users);
+    setAccounts(users);
   };
   // this is where we get the current user information
   useEffect(() => {
@@ -37,11 +37,12 @@ const AccountRequestsPage = () => {
 
     await updateUserAccount(token, user_id, data);
 
-    const currentData = pendingAccounts;
-    currentData[index].app_metadata.approved = !currentStatus;
+    const currentData = accounts;
+    console.log(currentData)
+    currentData[index].approved = !currentStatus;
 
-    setPendingAccounts([...currentData]);
-    toast("👍 User status succesfully changed");
+    setAccounts([...currentData]);
+    toast.success("👍 User status succesfully changed");
     return;
   };
 
@@ -100,7 +101,7 @@ const AccountRequestsPage = () => {
               </tr>
             </thead>
             <tbody>
-              {pendingAccounts.map((account, index) => {
+              {accounts.map((account, index) => {
                 return (
                   <tr className="h-[3rem]" key={`${account}-${index}`}>
                     <td className="px-6 py-3">
@@ -132,20 +133,19 @@ const AccountRequestsPage = () => {
                     </td>
                     <td className="px-6 py-3">
                       <button
-                        className={`${
-                          account.app_metadata.approved
-                            ? "text-green-700 bg-green-100 border-green-400"
-                            : "text-orange-700 bg-orange-100 border-orange-400"
-                        } w-fit p-[0.5rem] rounded-md border-[0.1rem]`}
+                        className={`${account.approved
+                          ? "text-green-700 bg-green-100 border-green-400"
+                          : "text-orange-700 bg-orange-100 border-orange-400"
+                          } w-fit p-[0.5rem] rounded-md border-[0.1rem]`}
                         onClick={() => {
                           toggleApprovedListener(
                             account.user_id,
-                            account.app_metadata.approved,
+                            account.approved,
                             index,
                           );
                         }}
                       >
-                        {account.app_metadata.approved ? "Enabled" : "Disabled"}
+                        {account.approved ? "Enabled" : "Disabled"}
                       </button>
                     </td>
                   </tr>

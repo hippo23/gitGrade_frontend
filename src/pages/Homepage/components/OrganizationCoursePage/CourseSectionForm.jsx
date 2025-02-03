@@ -30,7 +30,6 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
 
   const selectedTeachers = watch("teachers") || [];
   const selectedAcademicYear = watch("academic_year");
-  const data = watch();
 
   const { getAccessTokenSilently } = useAuth0();
   useFieldArray({
@@ -41,9 +40,13 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
   useEffect(() => {
     (async () => {
       const token = await getAccessTokenSilently();
-      const teachers_data = await getPersons(token, "faculty");
       const calendar_data = await getCalendarSessions(token);
       const semester_data = await getCalendarSessionSemester(token);
+      let teachers_data = await getPersons(token, "faculty");
+
+      teachers_data.map((teacher) => {
+        return { ...teacher, isSelected: false }
+      })
 
       setTeachers(teachers_data);
       setCalendarSessions(calendar_data);
@@ -60,12 +63,12 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-[1fr_0.6fr] gap-[2rem] bg-white border-[0.1rem] shadow-md border-gray-200 rounded-md min-h-[30rem] w-[70rem] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] p-[4rem]"
+      className="z-20 grid grid-cols-[1fr_1fr] gap-[2rem] bg-white border-[0.1rem] shadow-md border-gray-200 rounded-md min-h-[30rem] w-[45rem] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] p-[2rem]"
     >
       <div className="grid grid-rows-[0.2fr_0.2fr_1fr] gap-[1rem]">
         <div className="rounded-md border-[1px] border-gray-300 flex flex-wrap justify-start items-start overflow-y-auto">
           {selectedTeachers.map((teacher, index) => {
-            if (teacher.value) {
+            if (teacher.isSelected) {
               return (
                 <div className="rounded-xl bg-black text-white text-[0.6rem] p-[0.5rem] flex items-center m-[0.2rem]">
                   <button type="button">
@@ -89,12 +92,13 @@ const CourseSectionForm = ({ hideAddFormListener, setCourses, onSubmit }) => {
           })}
         </div>
         <div className="w-full flex"></div>
-        <div className="bg-gray-100 rounded-md flex-col flex justify-start items-start p-[1rem] overflow-y-auto">
+        <div className="rounded-md flex-col flex justify-start items-start p-[1rem] overflow-y-auto">
           <CheckboxForm
             dataset={teachers}
             register={register}
             field_name="teachers"
-            value_key="personid"
+            value_key="organizationpersonroleid"
+            state_key="isSelected"
             label_key={["lastname", "firstname", "middlename"]}
             onChangeCallback={toggleCheckbox}
           />

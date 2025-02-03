@@ -3,64 +3,107 @@ import {
   getStudentCourseSection,
   updateStudentCourseSection,
   assignStudentsToCourseSection,
+  deployStudentGrades,
+  clearStudentGrade,
 } from "/src/api/sql_api";
 import { useAuth0 } from "@auth0/auth0-react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { ToastContainer, toast } from "react-toastify";
 import StudentSectionForm from "./StudentSectionForm";
 import "react-toastify/dist/ReactToastify.css";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
+import { useUndo } from "../../custom_hooks/customHooks";
+import UndoIcon from "/src/assets/arrow-clockwise.svg?react";
+import RedoIcon from "/src/assets/arrow-counterclockwise.svg?react";
+import TrashIcon from "/src/assets/trash.svg?react";
+import MenuIcon from "/src/assets/menuone.svg?react";
+import RowActionsMenu from "../../reused_components/RowActionsMenu";
 
 const CourseSectionDetails = () => {
-  const [editedStudents, setEditedStudents] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
-  const [students, setStudents] = useState([]);
+  const {
+    getState: editGetState,
+    changeState: editChangeState,
+    undoChange: editUndoChange,
+    redoChange: editRedoChange,
+    resetHistory: editResetHistory,
+  } = useUndo({});
+  const {
+    getState: studentGetState,
+    changeState: studentChangeState,
+    undoChange: studentUndoChange,
+    redoChange: studentRedoChange,
+    clearHistory: studentClearHistory,
+  } = useUndo();
   const { getAccessTokenSilently } = useAuth0();
   const { courseSectionId } = useParams();
 
+  const refreshGrade = async () => {
+    const token = await getAccessTokenSilently();
+    const res = await getStudentCourseSection(token, {
+      courseSectionId: courseSectionId,
+    });
+
+    const rows = res.map((student, index) => {
+      return {
+        id: index,
+        personId: student.organizationpersonroleid,
+        studentCourseSectionId: student.studentcoursesectionid,
+        pendingStudentCourseSectionId: student.pendingstudentcoursesectionid,
+        gradeStatus: student.gradestatus,
+        name: student.lastname + ", " + student.firstname,
+        grade: student.grade,
+        remarks: student.remarks,
+        visibleGrade: student.visiblegrade,
+        isDeleted: false,
+      };
+    });
+
+    studentChangeState(rows);
+  };
+
   useEffect(() => {
     (async () => {
-      const token = await getAccessTokenSilently();
-      const res = await getStudentCourseSection(token, {
-        courseSectionId: courseSectionId,
-      });
-
-      const rows = res.map((student, index) => {
-        return {
-          id: index,
-          personId: student.personid,
-          pendingStudentCourseSectionId: student.pendingstudentcoursesectionid,
-          gradeStatus: student.gradestatus,
-          name: student.lastname + ", " + student.firstname,
-          grade: student.grade,
-          remarks: student.remarks,
-        };
-      });
-
-      setStudents([...rows]);
+      await refreshGrade();
     })();
   }, []);
 
   const addToEditedRows = (row) => {
-    setEditedStudents({ ...editedStudents, [row.personId]: row });
+    editChangeState({ ...editGetState(), [row.personId]: row });
   };
 
   const pushEditedRows = async () => {
     const token = await getAccessTokenSilently();
-    const updates = Object.keys(editedStudents).map((key) => {
-      return editedStudents[key];
+    const changedStudents = Object.keys(editGetState()).map((key) => {
+      return editGetState()[key];
     });
 
-    updateStudentCourseSection(token, {
-      updates: updates,
+    const deletedIds = studentGetState()
+      .filter((student) => student.isDeleted)
+      .map((student) => student.personId);
+
+    await updateStudentCourseSection(token, {
+      changedStudents,
+      deletedIds,
+      courseSectionId
     });
 
-    setEditedStudents({});
+    // clear history
+    editResetHistory();
+    studentClearHistory();
 
     toast.success("User data succesfully changed!", {
-      position: "bottom-center",
+      position: "top-right",
     });
+  };
+
+  const deployEdits = async () => {
+    await pushEditedRows();
+    const token = await getAccessTokenSilently();
+    await deployStudentGrades(token, { courseSectionId });
+    await refreshGrade();
+    toast.success("Student grades successfully deployed!");
   };
 
   const onSubmitAddForm = async (values) => {
@@ -68,12 +111,12 @@ const CourseSectionDetails = () => {
     const token = await getAccessTokenSilently();
 
     const studentIds = values.formStudents
-      .filter((student) => student.value != false)
-      .map((student) => student.value);
+      .filter((student) => student.isSelected != false)
+      .map((student) => student.isSelected);
 
     const data = {
-      courseSectionId: courseSectionId,
-      studentIds: studentIds,
+      courseSectionId,
+      studentIds
     };
 
     await assignStudentsToCourseSection(token, data);
@@ -87,6 +130,7 @@ const CourseSectionDetails = () => {
       return {
         id: index,
         personId: student.personid,
+        studentCourseSectionId: student.studentcoursesectionid,
         pendingStudentCourseSectionId: student.pendingstudentcoursesectionid,
         gradeStatus: student.gradestatus,
         name: student.lastname + ", " + student.firstname,
@@ -95,7 +139,7 @@ const CourseSectionDetails = () => {
       };
     });
 
-    setStudents([...rows]);
+    studentChangeState(rows);
 
     toast.success("Students successfully added!", {
       position: "bottom-center",
@@ -104,11 +148,11 @@ const CourseSectionDetails = () => {
     setShowAddForm(false);
   };
 
-  const syncCellEdit = (params) => {
-    const updatedRows = students.map((row) =>
-      row.id === params.id ? { ...row, [params.field]: params.value } : row,
+  const syncCellEdit = (updatedRow) => {
+    const updatedRows = studentGetState().map((row) =>
+      row.id === updatedRow.id ? updatedRow : row,
     );
-    setRows([...updatedRows]);
+    studentChangeState(updatedRows);
   };
 
   // create the columnAttr for the table
@@ -164,6 +208,74 @@ const CourseSectionDetails = () => {
       flex: 1,
       editable: true,
     },
+    {
+      field: "visibleGrade",
+      headerName: "Visible Grade",
+      editable: false,
+      width: 150,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 200,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<TrashIcon />}
+            label="Save"
+            sx={{
+              color: "primary.main",
+            }}
+            onClick={() => {
+              studentChangeState(
+                studentGetState().map((student) =>
+                  student.id === params.id
+                    ? { ...student, isDeleted: true }
+                    : student,
+                ),
+              );
+              let removeFromEdit = { ...editGetState() }
+              delete removeFromEdit[params.row.personId]
+              editChangeState(removeFromEdit);
+            }}
+          />,
+          <GridActionsCellItem
+            icon={
+              <RowActionsMenu
+                row={params}
+                Icon={<MenuIcon />}
+                actions={[
+                  {
+                    name: "Clear Grade",
+                    method: async () => {
+                      const token = await getAccessTokenSilently();
+                      console.log(params)
+                      await clearStudentGrade(token, {
+                        courseSectionId,
+                        studentIds: [params.row.personId]
+                      });
+                      params.row.visibleGrade = null;
+                      toast.success("Student grades successfully cleared!");
+                      await refreshGrade();
+                    },
+                  },
+                  {
+                    name: "View Profile",
+                    method: () => { },
+                  },
+                ]}
+              />
+            }
+            label="Cancel"
+            className="textPrimary"
+            onClick={() => { }}
+            color="inherit"
+          />,
+        ];
+      },
+    },
   ];
 
   return (
@@ -176,23 +288,41 @@ const CourseSectionDetails = () => {
       ) : null}
       <ToastContainer />
       <div className="h-full w-full grid grid-rows-[auto_1fr]">
-        <header className="w-full h-fit flex flex-row justify-center border-b-[1px] border-gray-200 px-[1rem]">
+        <header className="w-full h-fit flex flex-row justify-center items-center border-b-[1px] border-gray-200 px-[1rem]">
           <div className="p-[0.5rem] flex flex-col">
             <h1>Grade Book</h1>
             <p className="text-gray-400 mr">
-              {Object.keys(editedStudents).length === 0
+              {editGetState() && Object.keys(editGetState()).length == 0
                 ? "All changes up to date!"
                 : "Unsaved Changes"}
             </p>
           </div>
-          <div className="m-auto">
-            <button className="font-bold text-[0.9rem] mr-[2rem]">
-              Pending
+          <div className="ml-auto flex mr-[3rem] gap-[1rem]">
+            <button
+              onClick={() => {
+                studentUndoChange();
+                editUndoChange();
+              }}
+              className="h-full hover:bg-gray-100 p-[0.2rem] rounded-md"
+            >
+              <UndoIcon />
             </button>
-            <button className="font-bold text-[0.9rem]">Deployed</button>
+            <button
+              onClick={() => {
+                studentRedoChange();
+                editRedoChange();
+              }}
+              className="h-full hover:bg-gray-100 p-[0.2rem] rounded-md"
+            >
+              <RedoIcon />
+            </button>
           </div>
-          <div className="ml-auto mr-[3rem] w-fit flex items-center">
-            <button className="hover:bg-gray-200 mr-[1.25rem] p-[0.4rem] rounded-md">
+          <div className="mr-[3rem] w-fit flex items-center">
+            <button
+              className="hover:bg-gray-200 mr-[1.25rem] p-[0.4rem] rounded-md"
+              title="Deploy Grades"
+              onClick={deployEdits}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -207,6 +337,7 @@ const CourseSectionDetails = () => {
             <button
               className="hover:bg-gray-200 rounded-md p-[0.4rem]"
               onClick={pushEditedRows}
+              title="Save Changes"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -235,18 +366,25 @@ const CourseSectionDetails = () => {
             </button>
           </header>
           <DataGrid
-            rows={students}
+            checkboxSelection
+            rows={
+              studentGetState() &&
+              studentGetState().filter((student) => !student.isDeleted)
+            }
             columns={columns}
-            rowHeight={25}
+            rowHeight={40}
             processRowUpdate={(updatedRow, originalRow) => {
-              console.log(updatedRow);
+              if (JSON.stringify(updatedRow) === JSON.stringify(originalRow)) {
+                return originalRow;
+              }
               addToEditedRows(updatedRow);
+              syncCellEdit(updatedRow);
               return updatedRow;
             }}
-            onProcessRowUpdateError={() => {
-              console.log("failure");
+            onProcessRowUpdateError={(err) => {
+              console.log("failure to update row.");
+              throw err
             }}
-            onCellEdit={syncCellEdit}
           />
         </div>
       </div>

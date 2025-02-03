@@ -2,8 +2,6 @@ import { withAuthenticationRequired } from "@auth0/auth0-react";
 import { useEffect, useState, useLayoutEffect } from "react";
 import {
   InfosheetPageOne,
-  InfosheetPageTwo,
-  InfosheetPageThree,
 } from "./InfosheetPages/InfosheetPages";
 import { useForm } from "react-hook-form";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -14,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 const InfosheetContainer = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [currentAppMetadata, setCurrentAppMetadata] = useState(null);
 
   const {
     register,
@@ -44,7 +41,6 @@ const InfosheetContainer = () => {
       if (!idTokenClaims["approved"]) {
         navigate("/errors/notapproved");
       } else if (idTokenClaims["filledOutInfoSheet"]) {
-        console.log("redirecting");
         navigate("/");
       }
     })();
@@ -69,20 +65,25 @@ const InfosheetContainer = () => {
 
   const onSubmit = async (data) => {
     const validPage = await trigger();
-
     const token = await getAccessTokenSilently();
 
-    console.log(data);
-    console.log(user.sub);
     if (validPage) {
-      console.log({ ...data });
       // once user has accomplished form, we will add their details to the database
-      const person = await createNewPerson(token, data);
+      const finalData = {
+        firstname: data.firstname,
+        middlename: data.middlename,
+        lastname: data.lastname,
+        location: data.address,
+        birthday: data.birthday,
+        authId: user.sub
+      }
+      const personId = await createNewPerson(token, finalData);
 
+      console.log(finalData)
       // then set the metadata to note that they have accomplished the form, and add their personal user id to the metadata / token
       const metadata = {
         app_metadata: {
-          personId: person.personid,
+          personId,
           filledOutInfoSheet: true,
         },
       };

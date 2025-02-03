@@ -10,10 +10,8 @@ const StudentSectionForm = ({ hideForm, onSubmit }) => {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors },
-    control,
   } = useForm({
     defaultValues: {
       formStudents: [],
@@ -25,8 +23,10 @@ const StudentSectionForm = ({ hideForm, onSubmit }) => {
   useEffect(() => {
     (async () => {
       const token = await getAccessTokenSilently();
-      const data = await getPersons(token, "student");
-      console.log(data);
+      let data = await getPersons(token, "student");
+      data = data.map((student) => {
+        return { ...student, isSelected: false }
+      })
       setStudents([...data]);
     })();
   }, [getAccessTokenSilently]);
@@ -50,9 +50,10 @@ const StudentSectionForm = ({ hideForm, onSubmit }) => {
           dataset={students}
           register={register}
           field_name="formStudents"
-          value_key="personid"
+          value_key="organizationpersonroleid"
+          state_key="isSelected"
           label_key={["firstname", "lastname"]}
-          onChangeCallback={() => {}}
+          onChangeCallback={() => { }}
         />
       </div>
       <button
@@ -61,7 +62,7 @@ const StudentSectionForm = ({ hideForm, onSubmit }) => {
       >
         Enrol Students
       </button>
-      <p>{JSON.stringify(data)}</p>
+      {JSON.stringify(data)}
     </form>
   );
 };

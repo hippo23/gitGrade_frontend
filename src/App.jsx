@@ -10,7 +10,6 @@ import {
 import {
   Auth0Provider,
   useAuth0,
-  withAuthenticationRequired,
 } from "@auth0/auth0-react";
 import Homepage from "./pages/Homepage/Homepage";
 import DashPanel from "./pages/Homepage/components/Dashboard/DashPanel";

@@ -5,7 +5,7 @@ import {
   getUserRoles,
   disableUserRoles,
   clearUserRoleRecords,
-  addUserRoles,
+  updateUserRoles
 } from "/src/api/auth0_api";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ToastContainer, toast } from "react-toastify";
@@ -70,80 +70,58 @@ const UserDetailsPage = () => {
       ...prevState,
       [name]: {
         active: checked,
+        name,
         code: prevState[name].code,
       },
     }));
   };
 
   const saveRoleChanges = async () => {
-    saveButton.current.disabled = true;
+    // saveButton.current.disabled = true;
     const token = await getAccessTokenSilently();
-    const user = await getUserAccounts(token, { user_id: userId });
-    console.log(user);
-    const personId = user[0].app_metadata.personId;
+    const user = await getUserAccounts(token, `user_id:"${userId}"`);
+    console.log(user)
+    const personId = user[0].personid;
 
     // need to delete all the previous roles of the user
-    const deleteRoles = [];
-    Object.keys(originalRoles).forEach(function (key, index) {
-      if (originalRoles[key].active == true) {
-        deleteRoles.push(originalRoles[key].code);
+    const deletedRoles = [];
+    Object.keys(originalRoles).forEach(function(key) {
+      if (originalRoles[key].active == true && roles[key].active == false) {
+        console.log(originalRoles[key].name)
+        deletedRoles.push(originalRoles[key].name);
       }
     });
-
-    if (deleteRoles.length > 0) {
-      await disableUserRoles(token, userId, {
-        roles: [...deleteRoles],
-      });
-    }
 
     // then add the added roles to the user
-    const addRoles = [];
-    const roleNames = [];
-    Object.keys(roles).forEach(function (key, index) {
-      if (roles[key].active == true) {
-        addRoles.push(originalRoles[key].code);
-        roleNames.push(originalRoles[key].name);
+    const addedRoles = [];
+    Object.keys(roles).forEach(function(key) {
+      if (roles[key].active == true && originalRoles[key].active == false) {
+        addedRoles.push(originalRoles[key].name);
       }
     });
 
-    console.log(roleNames);
-    if (addRoles.length > 0) {
-      await addUserRoles(token, userId, {
-        roles: [...addRoles],
-        role_names: [...roleNames],
-        personid: personId,
-      });
+    const addData = {
+      roles: addedRoles,
+      userId: userId,
+      personId: personId
     }
 
-    const currentRoles = await getUserRoles(token, userId);
+    const deleteData = {
+      roles: deletedRoles,
+      userId: userId
+    }
 
-    const roles_data = {
-      admin: {
-        active: false,
-        name: "admin",
-        code: "rol_SoW0bAKj2EFJjq9p",
-      },
-      student: {
-        active: false,
-        name: "student",
-        code: "rol_O4q4clcTvOeed7q6",
-      },
-      faculty: {
-        active: false,
-        name: "faculty",
-        code: "rol_BSKVuiyht3oW58My",
-      },
-    };
+    console.log(addData)
+    console.log(deleteData)
+    updateUserRoles(token, addData, 'add')
+    updateUserRoles(token, deleteData, 'disable')
 
     // set the new roles to avoid any data conflicts
-    currentRoles.map((role) => {
-      roles_data[role.name.toLowerCase()].active = true;
-    });
     setRoles({
-      ...roles_data,
+      ...roles,
     });
     setOriginalRoles({
-      ...roles_data,
+      ...roles,
     });
 
     toast("👍 User permissions have been updated!");
@@ -152,47 +130,34 @@ const UserDetailsPage = () => {
 
   const handleClearRole = async (code, name) => {
     const token = await getAccessTokenSilently();
-    const user = await getUserAccounts(token, { user_id: userId });
-    const personId = user[0].app_metadata.personId;
+    const user = await getUserAccounts(token, `user_id:"${userId}"`);
+    const personId = user[0].personid;
+    console.log(user)
 
-    await disableUserRoles(token, userId, {
-      roles: [code],
-    });
+    console.log(personId)
+    if (originalRoles[name].active == true) {
+      console.log('this is running')
+      await updateUserRoles(token, {
+        roles: [name],
+        userId,
+        personId
+      }, 'delete');
+    } else {
+      console.log('that is running')
+      await updateUserRoles(token, {
+        roles: [],
+        userId,
+        personId
+      }, 'delete');
+    }
 
-    await clearUserRoleRecords(token, userId, {
-      role_names: [name],
-      personid: personId,
-    });
+    console.log(name)
 
-    const currentRoles = await getUserRoles(token, userId);
-
-    const roles_data = {
-      admin: {
-        active: false,
-        name: "admin",
-        code: "rol_SoW0bAKj2EFJjq9p",
-      },
-      student: {
-        active: false,
-        name: "student",
-        code: "rol_O4q4clcTvOeed7q6",
-      },
-      faculty: {
-        active: false,
-        name: "faculty",
-        code: "rol_BSKVuiyht3oW58My",
-      },
-    };
-
-    // set the new roles to avoid any data conflicts
-    currentRoles.map((role) => {
-      roles_data[role.name.toLowerCase()].active = true;
-    });
     setRoles({
-      ...roles_data,
+      ...roles,
     });
     setOriginalRoles({
-      ...roles_data,
+      ...roles,
     });
 
     toast("👍 User records have been cleared!");

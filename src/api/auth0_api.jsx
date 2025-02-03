@@ -2,30 +2,20 @@ import axios from "axios";
 const baseUrl = "http://localhost:3000";
 
 // function to get all user accounts
-const getUserAccounts = async (accessToken, queryParameters = null) => {
-  if (queryParameters == null) {
-    const res = await axios.get(`${baseUrl}/auth/users`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+const getUserAccounts = async (accessToken, queryParameters = '') => {
+  const res = await axios.get(`${baseUrl}/admin/users/auth`, {
+    params: { queryParameters },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
 
-    return res.data;
-  } else {
-    const res = await axios.get(`${baseUrl}/auth/users`, {
-      params: queryParameters,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    return res.data;
-  }
-};
+  return res.data
+}
 
 // function to update specific user accounts
 const updateUserAccount = async (accessToken, id, data) => {
-  await axios.patch(`${baseUrl}/auth/users/${id}`, data, {
+  await axios.patch(`${baseUrl}/admin/users/auth`, { userId: id, data }, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -35,7 +25,7 @@ const updateUserAccount = async (accessToken, id, data) => {
 };
 
 const getAllRoles = async (accessToken, id) => {
-  const response = await axios.get(`${baseUrl}/auth/roles`, {
+  const response = await axios.get(`${baseUrl}/roles`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -45,7 +35,7 @@ const getAllRoles = async (accessToken, id) => {
 };
 
 const getUserRoles = async (accessToken, id) => {
-  const response = await axios.get(`${baseUrl}/auth/users/${id}/roles`, {
+  const response = await axios.get(`${baseUrl}/admin/users/${id}/roles`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -77,13 +67,16 @@ const disableUserRoles = async (accessToken, id, data) => {
   });
 };
 
-const addUserRoles = async (accessToken, id, data) => {
-  await axios.post(`${baseUrl}/auth/users/${id}/roles`, data, {
+const updateUserRoles = async (accessToken, data, action) => {
+  await axios.patch(`${baseUrl}/admin/users/roles`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-  });
-};
+    params: {
+      action
+    }
+  })
+}
 
 export {
   getUserAccounts,
@@ -91,6 +84,6 @@ export {
   getUserRoles,
   disableUserRoles,
   clearUserRoleRecords,
-  addUserRoles,
   getAllRoles,
+  updateUserRoles
 };
