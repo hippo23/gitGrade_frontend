@@ -99,7 +99,6 @@ const HRPanel = (props) => {
                     {employee.middlename + ", " + employee.firstname}
                   </td>
                   <td className="px-6 py-3">
-                    {employee.role_name.toUpperCase()}
                   </td>
                   <td className="px-6 py-3">{employee.birthday}</td>
                 </tr>

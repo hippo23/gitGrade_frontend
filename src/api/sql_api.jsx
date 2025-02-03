@@ -14,9 +14,10 @@ const getAllCourses = async (accessToken) => {
 };
 
 const getPersons = async (accessToken, roleName = null) => {
+  console.log(roleName)
   const res = await axios.get(`${baseUrl}/admin/users`, {
     params: {
-      filterBy: roleName.toLowerCase(),
+      filterBy: roleName != null ? roleName.toLowerCase() : roleName,
     },
     headers: {
       "content-type": "application/json",

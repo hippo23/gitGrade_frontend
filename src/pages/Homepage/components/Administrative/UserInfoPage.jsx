@@ -134,22 +134,11 @@ const UserDetailsPage = () => {
     const personId = user[0].personid;
     console.log(user)
 
-    console.log(personId)
-    if (originalRoles[name].active == true) {
-      console.log('this is running')
-      await updateUserRoles(token, {
-        roles: [name],
-        userId,
-        personId
-      }, 'delete');
-    } else {
-      console.log('that is running')
-      await updateUserRoles(token, {
-        roles: [],
-        userId,
-        personId
-      }, 'delete');
-    }
+    await updateUserRoles(token, {
+      roles: [name],
+      userId,
+      personId
+    }, 'delete');
 
     console.log(name)
 

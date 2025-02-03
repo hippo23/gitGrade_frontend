@@ -45,7 +45,7 @@ const StudentSectionForm = ({ hideForm, onSubmit }) => {
           Choose the students you'd like to enrol into this section.
         </p>
       </div>
-      <div className="flex-1 pt-[1rem]">
+      <div className="flex-1 pt-[1rem] overflow-auto">
         <CheckboxForm
           dataset={students}
           register={register}
@@ -62,7 +62,6 @@ const StudentSectionForm = ({ hideForm, onSubmit }) => {
       >
         Enrol Students
       </button>
-      {JSON.stringify(data)}
     </form>
   );
 };
