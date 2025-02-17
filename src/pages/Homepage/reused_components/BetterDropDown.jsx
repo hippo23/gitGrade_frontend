@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import SemesterRowForm from "./SemesterRowForm";
-const BetterDropDown = ({ label, labelStyles, children }) => {
+const BetterDropDown = ({ label, labelStyles, children, containerStyles }) => {
   const [col, setCol] = useState(false);
   return (
-    <div className="w-fit">
+    <div className={clsx("w-fit", containerStyles)}>
       <button
         onClick={() => {
           setCol(!col);
