@@ -72,16 +72,25 @@ const TeacherCoursesPanel = () => {
                 </div>
                 {students.map((p, indexP) => {
                   const { name, grade, number } = p;
+                  const [editingGrade, setEditingGrade] = useState(false)
                   return (
                     <div className={clsx("divide-x-2 px-4 py-3 grid grid-cols-5 border border-solid border-x-0 border-t-0", indexS % 2 != 0 ? indexP % 2 != 0 ? " bg-white" : " bg-gray-100" : indexP % 2 != 0 ? " bg-gray-100" : " bg-white")}>
                       <span className="col-span-2 px-4">{name}</span>
                       <span className="px-4">{number}</span>
-                      <div className="flex flex-row items-center justify-between col-span-2 px-4">
-                        <span className="px-4">{grade}</span>
-                        <button className="text-sm bg-gray-100 border-none outline-none hover:bg-gray-200 transition-all duration-300 ease-out rounded-md px-2 py-1">
-                          Edit Grade
-                        </button>
-                      </div>
+                      {editingGrade ?
+                        <form className="flex flex-row justify-between items-center px-4 w-full col-span-2">
+                          <input className="rounded-md py-0 px-4"
+                            inputMode="numeric" placeholder="Enter grade here"></input>
+                          <button className="text-sm bg-black text-white border-none outline-none transition-all duration-300 ease-out rounded-md px-2 py-1"
+                            onClick={() => setEditingGrade(false)}>Save</button>
+                        </form> :
+                        <div className="flex flex-row items-center justify-between col-span-2 px-4">
+                          <span className="px-4">{grade}</span>
+                          <button className="text-sm bg-black border-none outline-none text-white transition-all duration-300 ease-out rounded-md px-2 py-1"
+                            onClick={() => setEditingGrade(true)}>
+                            Edit Grade
+                          </button>
+                        </div>}
                     </div>
                   )
                 })}
