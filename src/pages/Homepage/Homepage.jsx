@@ -136,7 +136,7 @@ const Homepage = () => {
                     />
                   </svg>
                 </span>
-                Courses
+                Sections
               </p>
             </NavLink>
             <NavLink
