@@ -1,6 +1,6 @@
 import { ReactFlow, Background, Controls, MarkerType, ReactFlowProvider, useReactFlow, useNodesState, useEdgesState, Panel } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useState, useCallback } from 'react';
+import { useEffect, useCallback, useLayoutEffect } from 'react';
 import * as Dagre from 'dagre'
 
 const initialNodes = [
@@ -108,8 +108,8 @@ const getLayoutedElements = (nodes, edges, options) => {
   nodes.forEach((node) =>
     g.setNode(node.id, {
       ...node,
-      width: node.measured?.width ?? 0,
-      height: node.measured?.height ?? 0,
+      width: node.measured?.width ?? 172,
+      height: node.measured?.height ?? 36,
     }),
   );
 
@@ -120,8 +120,8 @@ const getLayoutedElements = (nodes, edges, options) => {
       const position = g.node(node.id);
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
-      const x = position.x - (node.measured?.width ?? 0) / 2;
-      const y = position.y - (node.measured?.height ?? 0) / 2;
+      const x = position.x - (node.measured?.width ?? 500) / 2;
+      const y = position.y - (node.measured?.height ?? 500) / 2;
 
       return { ...node, position: { x, y } };
     }),
@@ -129,18 +129,18 @@ const getLayoutedElements = (nodes, edges, options) => {
   };
 };
 
+const formattedNodes = createNodes(initialNodes)
+const formattedEdges = createEdges(initialEdges)
+const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(formattedNodes, formattedEdges, 'TB')
+
 const LayoutFlow = () => {
-
-  const formattedNodes = createNodes(initialNodes)
-  const formattedEdges = createEdges(initialEdges)
-
   const { fitView } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(formattedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(formattedEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+
 
   const onLayout = useCallback(
     (direction) => {
-      console.log(nodes);
       const layouted = getLayoutedElements(nodes, edges, { direction });
 
       setNodes([...layouted.nodes]);
@@ -153,6 +153,10 @@ const LayoutFlow = () => {
     [nodes, edges],
   );
 
+  useLayoutEffect(() => {
+    onLayout('LR')
+  }, [])
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -160,20 +164,11 @@ const LayoutFlow = () => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       fitView
-    >
-      <Panel position="top-right">
-        <button onClick={() => onLayout('TB')}>vertical layout</button>
-        <button onClick={() => onLayout('LR')}>horizontal layout</button>
-      </Panel>
-    </ReactFlow>
+    ></ReactFlow>
   );
 };
 
 const CurriculumChecklist = ({ curriculum, accomplishedSubjects }) => {
-
-
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
 
   return (
     <div className="h-full w-full bg-white">
