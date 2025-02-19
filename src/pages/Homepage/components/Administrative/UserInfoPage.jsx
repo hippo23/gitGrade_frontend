@@ -3,8 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import {
   getUserAccounts,
   getUserRoles,
-  disableUserRoles,
-  clearUserRoleRecords,
   updateUserRoles
 } from "/src/api/auth0_api";
 import { useAuth0 } from "@auth0/auth0-react";

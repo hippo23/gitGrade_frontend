@@ -18,7 +18,7 @@ const TeacherCoursesPanel = () => {
   }, [getAccessTokenSilently]);
 
   return (
-    <div className="h-full w-full bg-white overflow-hidden flex flex-col">
+    <div className="text-[0.9rem] h-full w-full bg-white overflow-hidden flex flex-col px-[5rem] py-[2rem] rounded-md">
       <div className="p-[1.3rem]">
         <h1 className="font-bold text-[1.7rem]">Your Sections 📋</h1>
       </div>
@@ -30,12 +30,12 @@ const TeacherCoursesPanel = () => {
       </div>
       {[{
         name: "WWFU/WWX",
-        details: "details about the course here",
+        details: "Details about the course here",
         sched: "Wed, Fri: (8:30 - 10:00)",
         students: [{ name: "Jeremiah Buizon", grade: 2, number: "2023-12345" }, { name: "Simon Magleo", grade: 2, number: "2023-12345" }]
       }, {
         name: "WWFU/WWX",
-        details: "details about the course here",
+        details: "Details about the course here",
         sched: "Wed, Fri: (8:30 - 10:00)",
         students: [{ name: "Jeremiah Buizon", grade: 2, number: "2023-12345" }, { name: "Simon Magleo", grade: 2, number: "2023-12345" }]
       }].map((s, indexS) => {
@@ -45,7 +45,7 @@ const TeacherCoursesPanel = () => {
             <BetterDropDown
               label={
                 <div
-                  className="w-full grid grid-cols-5 divide-x-2 h-fit w-full transition-all duration-300 ease-out cursor-pointer"
+                  className="w-full grid grid-cols-5 divide-x-2 h-fit transition-all duration-300 ease-out cursor-pointer"
                 >
                   <span className="px-4">{name}</span>
                   <span className="col-span-2 px-4">{sched}</span>

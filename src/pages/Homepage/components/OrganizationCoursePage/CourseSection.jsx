@@ -228,7 +228,7 @@ const CourseSection = () => {
       <ToastContainer />
       <div
         ref={containerRef}
-        className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr]"
+        className="h-full w-full bg-white overflow-hidden grid grid-rows-[0.1fr_0.07fr_1fr] py-[2rem] px-[5rem]"
       >
         {showAddForm ? (
           <CourseSectionForm
@@ -243,20 +243,8 @@ const CourseSection = () => {
             {courseSections[0] && courseSections[0].course_name} 📋
           </h1>
         </div>
-        <div className="border-y-[1px] border-slate-150 px-[1rem] flex items-center">
-          <button className="rounded-md hover:bg-gray-100 h-fit py-[0.4rem] px-[1rem] min-w-[5rem] text-[0.75rem] mr-[0.5rem]">
-            Create Calendar Year
-          </button>
+        <div className="border-t-[1px] border-slate-150 px-[1rem] flex items-center">
           <CalendarSessionDropdown />
-          <button
-            onClick={() => {
-              semesterOpen().then((value) => { });
-            }}
-            className="rounded-md hover:bg-gray-100 h-fit py-[0.4rem] px-[1rem] min-w-[5rem] text-[0.75rem] mr-[1rem]"
-          >
-            Create Semester
-            {semesterElem}
-          </button>
           <button
             onClick={showAddFormListener}
             className="shadow-md bg-red-500 h-fit px-[1rem] py-[0.4rem] min-w-[4rem] text-[0.75rem] mr-[0.5rem] underline ml-auto hover:bg-red-600 flex items-center justify-center w-fit rounded-md"

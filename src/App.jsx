@@ -24,6 +24,7 @@ import NotApprovedPage from "./pages/Homepage/components/Errors/NotApproved";
 import UserDetailsPage from "./pages/Homepage/components/Administrative/UserInfoPage";
 import UnauthorizedPage from "./pages/Homepage/components/Errors/Unauthorized";
 import CourseSectionDetails from "./pages/Homepage/components/OrganizationCoursePage/CourseSectionGradesDetails";
+import CurriculumChecklist from "./pages/Homepage/components/CurriculumChecklist/CurriculumChecklist";
 
 const Auth0ProviderLayout = () => {
   // customize redirect callback functoin for react router
@@ -105,6 +106,7 @@ const routerElements = createBrowserRouter(
           element=<ProtectedRoute requiredRoles={["student"]} />
         >
           <Route path="gradespanel" element={<GradesPanel />}></Route>
+          <Route path="curriculum_checklist" element={<CurriculumChecklist />}></Route>
         </Route>
         <Route
           path="/faculty"
